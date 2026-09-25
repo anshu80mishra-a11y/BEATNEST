@@ -284,7 +284,7 @@
     .nav-btn.active span.nav-icon { color: var(--spotify-green); }
     .nav-icon { font-size: 1.25rem; }
 
-    /* 🔒 PAYWALL MODAL */
+    /* PAYWALL MODAL */
     .paywall-overlay {
       position: fixed;
       top: 0;
@@ -356,8 +356,8 @@
       <h2 style="font-weight:800; font-size:1.5rem;">BeatNest</h2>
       <p style="font-size:0.75rem; color:var(--text-sub); margin-top:4px;">DEVELOPER: HIMANSHU MISHRA</p>
       
-      <input type="email" class="input-field" id="email" placeholder="Email">
-      <input type="password" class="input-field" id="password" placeholder="Password">
+      <input type="email" class="input-field" id="email" placeholder="Email (optional for guest)">
+      <input type="password" class="input-field" id="password" placeholder="Password (optional for guest)">
       <button class="btn-green" id="loginBtn">Log In</button>
       <button class="btn-green btn-guest" id="guestBtn">Guest Access (Direct Play)</button>
       <p id="authMsg" style="color:#f43f5e; font-size:0.75rem; margin-top:12px;"></p>
@@ -366,7 +366,6 @@
 
   <!-- MAIN APP -->
   <div class="hidden" id="appSection">
-    <!-- TOP BAR -->
     <div class="top-header">
       <div class="brand-title"><span>⚡</span> BeatNest</div>
       <div style="display:flex; align-items:center; gap:8px;">
@@ -388,7 +387,7 @@
     <div class="content-area hidden" id="viewLibrary">
       <h3 style="margin-bottom:14px; font-size:1.1rem;">Your Library</h3>
       <div style="background:#181818; padding:16px; border-radius:12px; margin-bottom:18px; text-align:center;">
-        <p style="font-size:0.8rem; color:var(--text-sub); margin-bottom:10px;">Offline gaane sunne ke liye phone/PC se MP3 chunein:</p>
+        <p style="font-size:0.8rem; color:var(--text-sub); margin-bottom:10px;">Offline gaane sunne ke liye phone se MP3 chunein:</p>
         <input type="file" id="localFileInput" accept="audio/*" style="display:none;">
         <button class="btn-green" style="width:auto; padding:8px 20px; font-size:0.8rem;" onclick="document.getElementById('localFileInput').click()">+ Add Local Song</button>
       </div>
@@ -459,7 +458,7 @@
     </div>
   </div>
 
-  <!-- 🔒 PAYWALL MODAL -->
+  <!-- PAYWALL MODAL -->
   <div class="paywall-overlay hidden" id="paywallModal">
     <div class="paywall-modal">
       <div class="paywall-badge">👑</div>
@@ -468,7 +467,6 @@
         Aapne apna 1 free song use kar liya hai. Unlimited gaane sunne ke liye VIP upgrade karein ya neeche <strong>Secret Passcode</strong> enter karein.
       </p>
 
-      <!-- PAID OPTION -->
       <div class="vip-price-box">
         <div class="vip-price">₹29 <span style="font-size:0.8rem; color:#aaa; font-weight:400;">/ Month</span></div>
         <a href="upi://pay?pa=himanshu120mishra@gmail.com&pn=BeatNest%20VIP&am=29&cu=INR" 
@@ -478,7 +476,6 @@
         </a>
       </div>
 
-      <!-- FREE CODE REDEEM SECTION -->
       <div class="free-box">
         <p style="font-size:0.78rem; color:#fff; font-weight:600;">🔑 Enter Secret VIP Passcode:</p>
         <input type="text" class="vip-code-input" id="vipCodeInput" placeholder="Password yahan likhein">
@@ -490,23 +487,8 @@
 
   <audio id="nativePlayer" class="hidden"></audio>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
+  <script>
     const YOUTUBE_API_KEY = "AIzaSyB2hWJiAkjzL9pYcfIEDxpxKkbgYIe1Y04";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBfZ5QsR6JQ5RTNX1NiIIVuMJ5GC1m7JgE",
-      authDomain: "exmmusic.firebaseapp.com",
-      projectId: "exmmusic",
-      storageBucket: "exmmusic.firebasestorage.app",
-      messagingSenderId: "346732395794",
-      appId: "1:346732395794:web:8c6840b04ef89cd67347cb"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
 
     const authSection = document.getElementById('authSection');
     const appSection = document.getElementById('appSection');
@@ -521,61 +503,74 @@
     let playedCount = parseInt(localStorage.getItem('bn_played') || '0', 10);
     let isVipUser = localStorage.getItem('bn_is_vip') === 'true';
 
-    onAuthStateChanged(auth, (user) => {
-      if (user) enterApp(user.email.split('@')[0], user.email);
-      else if (sessionStorage.getItem('bn_guest')) enterApp('Guest User', 'guest@beatnest.com');
-      else {
-        appSection.classList.add('hidden');
-        authSection.classList.remove('hidden');
-      }
-    });
-
+    // APP ENTRANCE
     function enterApp(name, email) {
       authSection.classList.add('hidden');
       appSection.classList.remove('hidden');
       playerDock.classList.remove('hidden');
       document.getElementById('profileName').innerText = name;
       document.getElementById('profileEmail').innerText = email;
-      document.getElementById('avatarText').innerText = name.charAt(0).toUpperCase();
+      document.getElementById('avatarText').innerText = (name.charAt(0) || 'U').toUpperCase();
       syncVipUI();
       updateProfileStats();
     }
 
-    document.getElementById('guestBtn').onclick = () => {
-      sessionStorage.setItem('bn_guest', 'Guest');
-      enterApp('Guest User', 'guest@beatnest.com');
-    };
-    document.getElementById('logoutBtn').onclick = () => {
-      sessionStorage.removeItem('bn_guest');
-      signOut(auth).catch(() => {});
-      location.reload();
-    };
+    // CHECK SAVED SESSION ON LOAD
+    const savedUser = localStorage.getItem('bn_current_user');
+    if (savedUser) {
+      const u = JSON.parse(savedUser);
+      enterApp(u.name, u.email);
+    }
 
-    // 🌟 VIP VS NORMAL BADGE LOGIC
+    // LOGIN BUTTON
+    document.getElementById('loginBtn').addEventListener('click', function() {
+      const emailVal = document.getElementById('email').value.trim();
+      const pwdVal = document.getElementById('password').value.trim();
+      if (!emailVal || !pwdVal) {
+        document.getElementById('authMsg').innerText = "Please enter both Email and Password!";
+        return;
+      }
+      const displayName = emailVal.split('@')[0];
+      const userData = { name: displayName, email: emailVal };
+      localStorage.setItem('bn_current_user', JSON.stringify(userData));
+      enterApp(userData.name, userData.email);
+    });
+
+    // GUEST BUTTON (DIRECT PLAY)
+    document.getElementById('guestBtn').addEventListener('click', function() {
+      const guestData = { name: 'Guest User', email: 'guest@beatnest.com' };
+      localStorage.setItem('bn_current_user', JSON.stringify(guestData));
+      enterApp(guestData.name, guestData.email);
+    });
+
+    // LOGOUT
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+      localStorage.removeItem('bn_current_user');
+      location.reload();
+    });
+
+    // VIP BADGE SYNC
     function syncVipUI() {
       const headerBadge = document.getElementById('vipHeaderBadge');
       const tierText = document.getElementById('profileTierText');
       const manualBtn = document.getElementById('manualVipBtn');
 
       if (isVipUser) {
-        // VIP MEMBER STATE
         headerBadge.innerText = '👑 VIP MEMBER';
         headerBadge.className = 'badge-vip';
-        
         tierText.innerText = '👑 VIP MEMBER';
         tierText.style.color = '#f59e0b';
         manualBtn.style.display = 'none';
       } else {
-        // NORMAL USER STATE
-        headerBadge.innerText = `NORMAL (${Math.max(0, 1 - playedCount)} FREE LEFT)`;
+        headerBadge.innerText = 'NORMAL (' + Math.max(0, 1 - playedCount) + ' FREE LEFT)';
         headerBadge.className = 'badge-normal';
-
         tierText.innerText = 'NORMAL USER';
         tierText.style.color = '#94a3b8';
         manualBtn.style.display = 'block';
       }
     }
 
+    // PLAY ENGINE WITH 1-TRACK LIMIT
     function playSong(track) {
       if (!isVipUser && playedCount >= 1) {
         paywallModal.classList.remove('hidden');
@@ -597,6 +592,4 @@
         nativePlayer.src = track.audioUrl;
         nativePlayer.play();
       } else {
-        videoBox.innerHTML = `
-          <iframe 
-            src="https://www.youtube-noco
+        videoBox.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + track.id + '?autoplay=1&playsinline=1&enablejsapi=1" allo
