@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>BeatNest Studio - Spotify Edition</title>
+  <title>BeatNest Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -77,7 +77,9 @@
       cursor: pointer;
       margin-top: 16px;
       font-size: 0.92rem;
+      touch-action: manipulation;
     }
+    .btn-green:active { opacity: 0.85; transform: scale(0.98); }
     .btn-guest {
       background: transparent;
       border: 1px solid #444;
@@ -356,10 +358,10 @@
       <h2 style="font-weight:800; font-size:1.5rem;">BeatNest</h2>
       <p style="font-size:0.75rem; color:var(--text-sub); margin-top:4px;">DEVELOPER: HIMANSHU MISHRA</p>
       
-      <input type="email" class="input-field" id="email" placeholder="Email (optional for guest)">
-      <input type="password" class="input-field" id="password" placeholder="Password (optional for guest)">
-      <button class="btn-green" id="loginBtn">Log In</button>
-      <button class="btn-green btn-guest" id="guestBtn">Guest Access (Direct Play)</button>
+      <input type="email" class="input-field" id="email" placeholder="Email (optional)">
+      <input type="password" class="input-field" id="password" placeholder="Password (optional)">
+      <button class="btn-green" id="loginBtn" onclick="handleLogin()">Log In</button>
+      <button class="btn-green btn-guest" id="guestBtn" onclick="handleGuest()">Guest Access (Direct Play)</button>
       <p id="authMsg" style="color:#f43f5e; font-size:0.75rem; margin-top:12px;"></p>
     </div>
   </div>
@@ -370,7 +372,7 @@
       <div class="brand-title"><span>⚡</span> BeatNest</div>
       <div style="display:flex; align-items:center; gap:8px;">
         <span id="vipHeaderBadge" class="badge-normal">NORMAL (1 TRACK)</span>
-        <button id="logoutBtn" style="background:transparent; border:1px solid #444; color:#fff; padding:4px 10px; border-radius:14px; font-size:0.72rem; cursor:pointer;">Log Out</button>
+        <button onclick="handleLogout()" style="background:transparent; border:1px solid #444; color:#fff; padding:4px 10px; border-radius:14px; font-size:0.72rem; cursor:pointer;">Log Out</button>
       </div>
     </div>
 
@@ -378,7 +380,7 @@
     <div class="content-area" id="viewSearch">
       <div class="search-box">
         <input type="text" id="searchInput" placeholder="What do you want to listen to?">
-        <button class="search-btn" id="searchBtn">Search</button>
+        <button class="search-btn" onclick="doSearch()">Search</button>
       </div>
       <div class="song-list" id="searchResults"></div>
     </div>
@@ -388,7 +390,7 @@
       <h3 style="margin-bottom:14px; font-size:1.1rem;">Your Library</h3>
       <div style="background:#181818; padding:16px; border-radius:12px; margin-bottom:18px; text-align:center;">
         <p style="font-size:0.8rem; color:var(--text-sub); margin-bottom:10px;">Offline gaane sunne ke liye phone se MP3 chunein:</p>
-        <input type="file" id="localFileInput" accept="audio/*" style="display:none;">
+        <input type="file" id="localFileInput" accept="audio/*" style="display:none;" onchange="handleLocalFile(event)">
         <button class="btn-green" style="width:auto; padding:8px 20px; font-size:0.8rem;" onclick="document.getElementById('localFileInput').click()">+ Add Local Song</button>
       </div>
 
@@ -421,7 +423,7 @@
           </div>
         </div>
 
-        <button class="btn-green" id="manualVipBtn" style="background:var(--gold-vip); color:#000; margin-top:10px;">👑 Upgrade / Secret Passcode</button>
+        <button class="btn-green" id="manualVipBtn" onclick="openPaywall()" style="background:var(--gold-vip); color:#000; margin-top:10px;">👑 Upgrade / Secret Passcode</button>
 
         <p style="font-size:0.75rem; color:#666; margin-top:16px;">
           Engineered by <strong>Himanshu Mishra</strong><br>
@@ -443,15 +445,15 @@
 
     <!-- SPOTIFY BOTTOM BAR -->
     <div class="spotify-navbar">
-      <button class="nav-btn active" id="navSearch">
+      <button class="nav-btn active" id="navSearch" onclick="switchTab('search')">
         <span class="nav-icon">🔍</span>
         <span>Search</span>
       </button>
-      <button class="nav-btn" id="navLibrary">
+      <button class="nav-btn" id="navLibrary" onclick="switchTab('library')">
         <span class="nav-icon">📚</span>
         <span>Library</span>
       </button>
-      <button class="nav-btn" id="navProfile">
+      <button class="nav-btn" id="navProfile" onclick="switchTab('profile')">
         <span class="nav-icon">👤</span>
         <span>My Profile</span>
       </button>
@@ -462,9 +464,9 @@
   <div class="paywall-overlay hidden" id="paywallModal">
     <div class="paywall-modal">
       <div class="paywall-badge">👑</div>
-      <div class="paywall-title">Free Song Trial Expired!</div>
+      <div class="paywall-title">Free Song Limit Over!</div>
       <p class="paywall-desc">
-        Aapne apna 1 free song use kar liya hai. Unlimited gaane sunne ke liye VIP upgrade karein ya neeche <strong>Secret Passcode</strong> enter karein.
+        Aapne apna 1 free song use kar liya hai. Aage sunne ke liye VIP upgrade karein ya neeche <strong>Secret Passcode</strong> enter karein.
       </p>
 
       <div class="vip-price-box">
@@ -479,7 +481,7 @@
       <div class="free-box">
         <p style="font-size:0.78rem; color:#fff; font-weight:600;">🔑 Enter Secret VIP Passcode:</p>
         <input type="text" class="vip-code-input" id="vipCodeInput" placeholder="Password yahan likhein">
-        <button class="btn-green" id="verifyVipBtn" style="padding:10px; margin-top:10px; font-size:0.82rem; background:var(--spotify-green);">✨ Unlock VIP Now</button>
+        <button class="btn-green" onclick="verifyVipCode()" style="padding:10px; margin-top:10px; font-size:0.82rem; background:var(--spotify-green);">✨ Unlock VIP Now</button>
         <p id="vipMsg" style="color:#f43f5e; font-size:0.72rem; margin-top:8px;"></p>
       </div>
     </div>
@@ -488,72 +490,50 @@
   <audio id="nativePlayer" class="hidden"></audio>
 
   <script>
-    const YOUTUBE_API_KEY = "AIzaSyB2hWJiAkjzL9pYcfIEDxpxKkbgYIe1Y04";
+    var YOUTUBE_API_KEY = "AIzaSyB2hWJiAkjzL9pYcfIEDxpxKkbgYIe1Y04";
 
-    const authSection = document.getElementById('authSection');
-    const appSection = document.getElementById('appSection');
-    const playerDock = document.getElementById('playerDock');
-    const videoBox = document.getElementById('videoBox');
-    const nativePlayer = document.getElementById('nativePlayer');
-    const paywallModal = document.getElementById('paywallModal');
+    var currentPlaylist = [];
+    var favorites = JSON.parse(localStorage.getItem('bn_favs') || '[]');
+    var offlineTracks = [];
+    var playedCount = parseInt(localStorage.getItem('bn_played') || '0', 10);
+    var isVipUser = localStorage.getItem('bn_is_vip') === 'true';
 
-    let currentPlaylist = [];
-    let favorites = JSON.parse(localStorage.getItem('bn_favs') || '[]');
-    let offlineTracks = [];
-    let playedCount = parseInt(localStorage.getItem('bn_played') || '0', 10);
-    let isVipUser = localStorage.getItem('bn_is_vip') === 'true';
-
-    // APP ENTRANCE
     function enterApp(name, email) {
-      authSection.classList.add('hidden');
-      appSection.classList.remove('hidden');
-      playerDock.classList.remove('hidden');
-      document.getElementById('profileName').innerText = name;
-      document.getElementById('profileEmail').innerText = email;
-      document.getElementById('avatarText').innerText = (name.charAt(0) || 'U').toUpperCase();
+      document.getElementById('authSection').classList.add('hidden');
+      document.getElementById('appSection').classList.remove('hidden');
+      document.getElementById('playerDock').classList.remove('hidden');
+      document.getElementById('profileName').innerText = name || 'User';
+      document.getElementById('profileEmail').innerText = email || 'user@beatnest.com';
+      document.getElementById('avatarText').innerText = ((name || 'U').charAt(0)).toUpperCase();
       syncVipUI();
       updateProfileStats();
     }
 
-    // CHECK SAVED SESSION ON LOAD
-    const savedUser = localStorage.getItem('bn_current_user');
-    if (savedUser) {
-      const u = JSON.parse(savedUser);
-      enterApp(u.name, u.email);
+    function handleLogin() {
+      var emailVal = document.getElementById('email').value.trim();
+      var pwdVal = document.getElementById('password').value.trim();
+      var dName = emailVal ? emailVal.split('@')[0] : 'User';
+      var dEmail = emailVal || 'user@beatnest.com';
+      var uData = { name: dName, email: dEmail };
+      localStorage.setItem('bn_current_user', JSON.stringify(uData));
+      enterApp(uData.name, uData.email);
     }
 
-    // LOGIN BUTTON
-    document.getElementById('loginBtn').addEventListener('click', function() {
-      const emailVal = document.getElementById('email').value.trim();
-      const pwdVal = document.getElementById('password').value.trim();
-      if (!emailVal || !pwdVal) {
-        document.getElementById('authMsg').innerText = "Please enter both Email and Password!";
-        return;
-      }
-      const displayName = emailVal.split('@')[0];
-      const userData = { name: displayName, email: emailVal };
-      localStorage.setItem('bn_current_user', JSON.stringify(userData));
-      enterApp(userData.name, userData.email);
-    });
+    function handleGuest() {
+      var gData = { name: 'Guest User', email: 'guest@beatnest.com' };
+      localStorage.setItem('bn_current_user', JSON.stringify(gData));
+      enterApp(gData.name, gData.email);
+    }
 
-    // GUEST BUTTON (DIRECT PLAY)
-    document.getElementById('guestBtn').addEventListener('click', function() {
-      const guestData = { name: 'Guest User', email: 'guest@beatnest.com' };
-      localStorage.setItem('bn_current_user', JSON.stringify(guestData));
-      enterApp(guestData.name, guestData.email);
-    });
-
-    // LOGOUT
-    document.getElementById('logoutBtn').addEventListener('click', function() {
+    function handleLogout() {
       localStorage.removeItem('bn_current_user');
       location.reload();
-    });
+    }
 
-    // VIP BADGE SYNC
     function syncVipUI() {
-      const headerBadge = document.getElementById('vipHeaderBadge');
-      const tierText = document.getElementById('profileTierText');
-      const manualBtn = document.getElementById('manualVipBtn');
+      var headerBadge = document.getElementById('vipHeaderBadge');
+      var tierText = document.getElementById('profileTierText');
+      var manualBtn = document.getElementById('manualVipBtn');
 
       if (isVipUser) {
         headerBadge.innerText = '👑 VIP MEMBER';
@@ -570,10 +550,9 @@
       }
     }
 
-    // PLAY ENGINE WITH 1-TRACK LIMIT
     function playSong(track) {
       if (!isVipUser && playedCount >= 1) {
-        paywallModal.classList.remove('hidden');
+        openPaywall();
         return;
       }
 
@@ -585,11 +564,28 @@
       updateProfileStats();
       syncVipUI();
 
-      nativePlayer.pause();
+      var np = document.getElementById('nativePlayer');
+      np.pause();
 
+      var vb = document.getElementById('videoBox');
       if (track.isOffline) {
-        videoBox.innerHTML = '<div style="color:var(--spotify-green); font-size:0.75rem; text-align:center; padding-top:35px;">Offline MP3</div>';
-        nativePlayer.src = track.audioUrl;
-        nativePlayer.play();
+        vb.innerHTML = '<div style="color:var(--spotify-green); font-size:0.75rem; text-align:center; padding-top:35px;">Offline MP3</div>';
+        np.src = track.audioUrl;
+        np.play();
       } else {
-        videoBox.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + track.id + '?autoplay=1&playsinline=1&enablejsapi=1" allo
+        vb.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + track.id + '?autoplay=1&playsinline=1&enablejsapi=1" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>';
+      }
+    }
+
+    function openPaywall() {
+      document.getElementById('paywallModal').classList.remove('hidden');
+    }
+
+    function verifyVipCode() {
+      var enteredCode = document.getElementById('vipCodeInput').value.trim();
+      if (enteredCode === "Himanshumishra@@8090@567") {
+        localStorage.setItem('bn_is_vip', 'true');
+        isVipUser = true;
+        document.getElementById('paywallModal').classList.add('hidden');
+        syncVipUI();
+        alert('🎉 Mubarak Ho! BeatNest VIP Pass Unlock Ho G
