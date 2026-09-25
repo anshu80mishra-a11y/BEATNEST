@@ -597,21 +597,16 @@
       if (e.key === 'Enter') doSearch();
     });
 
-    // DIRECT MP3 DOWNLOAD TRIGGER
-    function downloadAudioTrack(videoId, title) {
+    // 🚀 STABLE YOUTUBE TO MP3 CONVERTER REDIRECT
+    function downloadAudioTrack(videoId) {
       if (!isVipUser && playedCount >= 1) {
         openPaywall();
         return;
       }
       
-      var dlUrl = 'https://loader.to/api/button/?url=https://www.youtube.com/watch?v=' + videoId + '&f=mp3&color=1db954';
-      var link = document.createElement('a');
-      link.href = dlUrl;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      // Direct working link with auto-populated video
+      var targetUrl = 'https://www.y2mate.com/youtube/' + videoId;
+      window.open(targetUrl, '_blank');
     }
 
     function renderSongs(list, target) {
@@ -641,7 +636,7 @@
         if (!t.isOffline) {
           row.querySelector('.download-btn').onclick = function(e) {
             e.stopPropagation();
-            downloadAudioTrack(t.id, t.title);
+            downloadAudioTrack(t.id);
           };
 
           row.querySelector('.fav-btn').onclick = function(e) {
