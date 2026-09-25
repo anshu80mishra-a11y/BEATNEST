@@ -3,27 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>BeatNest Studio - Engineered by Himanshu Mishra</title>
+  <title>BeatNest Studio - Spotify Edition</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --spotify-green: #1db954;
-      --spotify-green-hover: #1ed760;
       --spotify-dark: #121212;
       --spotify-base: #000000;
       --spotify-card: #181818;
       --spotify-hover: #282828;
       --text-main: #ffffff;
       --text-sub: #b3b3b3;
-      --border-subtle: rgba(255, 255, 255, 0.08);
+      --gold-vip: #f59e0b;
     }
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
     body {
@@ -46,46 +45,25 @@
     }
     .auth-card {
       width: 100%;
-      max-width: 400px;
+      max-width: 380px;
       background: var(--spotify-dark);
-      border-radius: 20px;
-      padding: 36px 26px;
+      border-radius: 18px;
+      padding: 32px 24px;
       text-align: center;
-      border: 1px solid var(--border-subtle);
-      box-shadow: 0 16px 40px rgba(0,0,0,0.85);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.8);
     }
-    .badge-chip {
-      width: 48px;
-      height: 34px;
-      border-radius: 8px;
-      background: linear-gradient(135deg, #1db954, #0f6e30);
-      margin: 0 auto 14px;
-      box-shadow: 0 0 16px rgba(29, 185, 84, 0.35);
-    }
-    .cyber-title {
-      font-size: 1.7rem;
-      font-weight: 800;
-      color: #fff;
-    }
-    .dev-tag {
-      font-size: 0.72rem;
-      letter-spacing: 2px;
-      color: var(--spotify-green);
-      text-transform: uppercase;
-      margin-top: 6px;
-      font-weight: 700;
-    }
+    .logo-badge { font-size: 2.2rem; color: var(--spotify-green); margin-bottom: 8px; }
     .input-field {
       width: 100%;
-      padding: 13px 16px;
+      padding: 12px 16px;
       margin-top: 12px;
       background: #242424;
       border: 1px solid transparent;
-      border-radius: 10px;
+      border-radius: 8px;
       color: #fff;
       font-size: 0.9rem;
       outline: none;
-      transition: 0.2s;
     }
     .input-field:focus { border-color: var(--spotify-green); }
     .btn-green {
@@ -99,29 +77,26 @@
       cursor: pointer;
       margin-top: 16px;
       font-size: 0.92rem;
-      transition: all 0.2s ease;
     }
-    .btn-green:hover { background: var(--spotify-green-hover); transform: scale(1.01); }
     .btn-guest {
       background: transparent;
       border: 1px solid #444;
       color: #fff;
       margin-top: 10px;
     }
-    .btn-guest:hover { background: rgba(255,255,255,0.06); }
 
     /* TOP HEADER */
     .top-header {
       padding: 14px 20px;
       background: rgba(18, 18, 18, 0.9);
-      backdrop-filter: blur(14px);
+      backdrop-filter: blur(12px);
       display: flex;
       justify-content: space-between;
       align-items: center;
       position: sticky;
       top: 0;
-      z-index: 50;
-      border-bottom: 1px solid var(--border-subtle);
+      z-index: 40;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
     }
     .brand-title {
       font-size: 1.25rem;
@@ -133,16 +108,14 @@
     }
     .brand-title span { color: var(--spotify-green); }
 
-    /* MAIN CONTENT VIEW */
+    /* CONTENT */
     .content-area {
       flex: 1;
-      padding: 18px 20px 200px;
-      max-width: 850px;
+      padding: 16px 20px 200px;
+      max-width: 800px;
       margin: 0 auto;
       width: 100%;
     }
-
-    /* SEARCH BAR */
     .search-box {
       display: flex;
       gap: 10px;
@@ -150,126 +123,89 @@
     }
     .search-box input {
       flex: 1;
-      padding: 13px 18px;
+      padding: 12px 18px;
       background: #242424;
-      border: 1px solid transparent;
+      border: none;
       border-radius: 24px;
       color: #fff;
-      font-size: 0.92rem;
+      font-size: 0.9rem;
       outline: none;
     }
-    .search-box input:focus { border-color: var(--spotify-green); }
     .search-btn {
-      padding: 0 24px;
+      padding: 0 22px;
       background: var(--spotify-green);
       color: #000;
       font-weight: 700;
       border: none;
       border-radius: 24px;
       cursor: pointer;
-      font-size: 0.9rem;
     }
 
-    /* TRACK CARDS */
-    .song-list { display: flex; flex-direction: column; gap: 9px; }
+    /* SONG CARDS */
+    .song-list { display: flex; flex-direction: column; gap: 8px; }
     .song-card {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 10px 14px;
+      padding: 10px 12px;
       background: var(--spotify-card);
-      border-radius: 12px;
-      border: 1px solid var(--border-subtle);
-      transition: background 0.15s, transform 0.15s;
+      border-radius: 10px;
+      transition: background 0.15s;
     }
-    .song-card:hover {
-      background: var(--spotify-hover);
-      transform: translateY(-1.5px);
-    }
+    .song-card:hover { background: var(--spotify-hover); }
     .song-thumb {
-      width: 50px;
-      height: 50px;
-      border-radius: 8px;
+      width: 48px;
+      height: 48px;
+      border-radius: 6px;
       object-fit: cover;
       background: #000;
       flex-shrink: 0;
     }
-    .song-info {
-      flex: 1;
-      overflow: hidden;
-      cursor: pointer;
-    }
+    .song-info { flex: 1; overflow: hidden; cursor: pointer; }
     .song-title {
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: 600;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .song-sub {
-      font-size: 0.75rem;
-      color: var(--text-sub);
-      margin-top: 3px;
-    }
-    .action-icons {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .action-btn {
-      background: none;
-      border: none;
-      color: var(--text-sub);
-      font-size: 1.15rem;
-      cursor: pointer;
-      transition: transform 0.15s, color 0.15s;
-    }
-    .action-btn:hover { color: #fff; transform: scale(1.1); }
+    .song-sub { font-size: 0.74rem; color: var(--text-sub); margin-top: 3px; }
+    .action-icons { display: flex; align-items: center; gap: 12px; }
+    .action-btn { background: none; border: none; color: var(--text-sub); font-size: 1.1rem; cursor: pointer; }
     .fav-on { color: #f43f5e !important; }
 
-    /* LIBRARY VIEW */
-    .upload-box {
-      border: 2px dashed rgba(255,255,255,0.15);
-      background: var(--spotify-card);
-      padding: 22px;
-      border-radius: 14px;
-      text-align: center;
-      margin-bottom: 22px;
-    }
-
-    /* PROFILE VIEW */
+    /* PROFILE */
     .profile-card {
       background: var(--spotify-dark);
-      border-radius: 18px;
-      padding: 28px 20px;
+      border-radius: 16px;
+      padding: 24px;
       text-align: center;
-      border: 1px solid var(--border-subtle);
+      border: 1px solid rgba(255,255,255,0.06);
     }
     .profile-avatar {
-      width: 86px;
-      height: 86px;
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #1db954, #121212);
+      background: linear-gradient(135deg, #1db954, #191414);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.2rem;
-      font-weight: 700;
-      margin: 0 auto 14px;
+      font-size: 2rem;
+      margin: 0 auto 12px;
       border: 2px solid var(--spotify-green);
     }
     .profile-stats {
       display: flex;
       justify-content: space-around;
-      margin: 22px 0;
-      padding: 16px 0;
+      margin: 18px 0;
+      padding: 12px 0;
       border-top: 1px solid rgba(255,255,255,0.08);
       border-bottom: 1px solid rgba(255,255,255,0.08);
     }
-    .stat-val { font-size: 1.3rem; font-weight: 800; color: var(--spotify-green); }
-    .stat-lbl { font-size: 0.75rem; color: var(--text-sub); margin-top: 3px; }
+    .stat-val { font-size: 1.2rem; font-weight: 700; color: var(--spotify-green); }
+    .stat-lbl { font-size: 0.75rem; color: var(--text-sub); margin-top: 2px; }
 
-    /* SPOTIFY BOTTOM DOCK PLAYER */
+    /* DOCK PLAYER */
     .bottom-player-dock {
       position: fixed;
       bottom: 60px;
@@ -277,41 +213,32 @@
       width: 100%;
       background: #181818;
       border-top: 1px solid rgba(255,255,255,0.1);
-      padding: 10px 18px;
+      padding: 10px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 14px;
+      gap: 12px;
       z-index: 90;
-      box-shadow: 0 -4px 20px rgba(0,0,0,0.7);
     }
-    .now-playing {
-      flex: 1;
-      overflow: hidden;
-    }
+    .now-playing { flex: 1; overflow: hidden; }
     .player-video-box {
-      width: 170px;
-      height: 96px;
+      width: 160px;
+      height: 90px;
       border-radius: 8px;
       overflow: hidden;
       background: #000;
       border: 1px solid rgba(255,255,255,0.15);
-      flex-shrink: 0;
     }
-    .player-video-box iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
+    .player-video-box iframe { width: 100%; height: 100%; border: none; }
 
-    /* SPOTIFY BOTTOM NAVIGATION BAR */
+    /* BOTTOM NAV */
     .spotify-navbar {
       position: fixed;
       bottom: 0;
       left: 0;
       width: 100%;
       height: 60px;
-      background: #000000;
+      background: #000;
       border-top: 1px solid rgba(255,255,255,0.08);
       display: flex;
       justify-content: space-around;
@@ -325,25 +252,80 @@
       background: none;
       border: none;
       color: var(--text-sub);
-      font-size: 0.74rem;
+      font-size: 0.75rem;
       font-weight: 600;
-      gap: 3px;
+      gap: 4px;
       cursor: pointer;
-      padding: 6px 14px;
-      transition: color 0.15s;
     }
     .nav-btn.active { color: #fff; }
     .nav-btn.active span.nav-icon { color: var(--spotify-green); }
     .nav-icon { font-size: 1.25rem; }
 
-    footer {
-      text-align: center;
-      padding: 24px 20px;
-      font-size: 0.8rem;
-      color: var(--text-sub);
-      border-top: 1px solid var(--border-subtle);
+    /* ====================================
+       🔒 SUBSCRIPTION & CODE POPUP
+    ==================================== */
+    .paywall-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.92);
+      backdrop-filter: blur(10px);
+      z-index: 999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
     }
-    footer a { color: var(--spotify-green); text-decoration: none; }
+    .paywall-modal {
+      background: #181818;
+      border: 1px solid var(--gold-vip);
+      border-radius: 20px;
+      padding: 24px 20px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(245, 158, 11, 0.25);
+    }
+    .paywall-badge { font-size: 2.3rem; margin-bottom: 6px; }
+    .paywall-title { font-size: 1.35rem; font-weight: 800; color: var(--gold-vip); }
+    .paywall-desc {
+      font-size: 0.82rem;
+      color: var(--text-sub);
+      margin: 10px 0 16px;
+      line-height: 1.4;
+    }
+    .vip-price-box {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px dashed var(--gold-vip);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 14px;
+    }
+    .vip-price { font-size: 1.4rem; font-weight: 800; color: #fff; }
+
+    /* FREE REDEEM CODE BOX */
+    .free-box {
+      background: #222;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 14px;
+    }
+    .vip-code-input {
+      width: 100%;
+      padding: 11px 14px;
+      background: #111;
+      border: 1px solid #444;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 0.85rem;
+      margin-top: 8px;
+      text-align: center;
+      font-weight: 700;
+    }
+    .vip-code-input:focus { border-color: var(--spotify-green); }
   </style>
 </head>
 <body>
@@ -351,27 +333,30 @@
   <!-- AUTH SCREEN -->
   <div class="auth-wrapper" id="authSection">
     <div class="auth-card">
-      <div class="badge-chip"></div>
-      <div class="cyber-title">BeatNest</div>
-      <div class="dev-tag">DEV: HIMANSHU MISHRA</div>
+      <div class="logo-badge">⚡</div>
+      <h2 style="font-weight:800; font-size:1.5rem;">BeatNest</h2>
+      <p style="font-size:0.75rem; color:var(--text-sub); margin-top:4px;">DEVELOPER: HIMANSHU MISHRA</p>
       
-      <input type="email" class="input-field" id="email" placeholder="Email Address">
+      <input type="email" class="input-field" id="email" placeholder="Email">
       <input type="password" class="input-field" id="password" placeholder="Password">
-      <button class="btn-green" id="loginBtn">Authenticate & Enter</button>
+      <button class="btn-green" id="loginBtn">Log In</button>
       <button class="btn-green btn-guest" id="guestBtn">Guest Access (Direct Play)</button>
       <p id="authMsg" style="color:#f43f5e; font-size:0.75rem; margin-top:12px;"></p>
     </div>
   </div>
 
-  <!-- MAIN APP CONTAINER -->
+  <!-- MAIN APP -->
   <div class="hidden" id="appSection">
-    <!-- TOP HEADER -->
+    <!-- TOP BAR -->
     <div class="top-header">
       <div class="brand-title"><span>⚡</span> BeatNest</div>
-      <button id="logoutBtn" style="background:transparent; border:1px solid #444; color:#fff; padding:6px 14px; border-radius:16px; font-size:0.75rem; cursor:pointer;">Log Out</button>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span id="vipHeaderBadge" style="font-size:0.72rem; padding:3px 8px; border-radius:12px; background:rgba(255,255,255,0.1); color:#aaa; font-weight:700;">FREE (1 TRACK)</span>
+        <button id="logoutBtn" style="background:transparent; border:1px solid #444; color:#fff; padding:4px 10px; border-radius:14px; font-size:0.72rem; cursor:pointer;">Log Out</button>
+      </div>
     </div>
 
-    <!-- 1. SEARCH TAB -->
+    <!-- 1. SEARCH VIEW -->
     <div class="content-area" id="viewSearch">
       <div class="search-box">
         <input type="text" id="searchInput" placeholder="What do you want to listen to?">
@@ -380,28 +365,28 @@
       <div class="song-list" id="searchResults"></div>
     </div>
 
-    <!-- 2. LIBRARY TAB -->
+    <!-- 2. LIBRARY VIEW -->
     <div class="content-area hidden" id="viewLibrary">
-      <div class="upload-box">
-        <h3 style="font-size:1rem; margin-bottom:6px;">📡 Local Audio Vault</h3>
-        <p style="font-size:0.8rem; color:var(--text-sub); margin-bottom:12px;">Bina Internet gaana sunne ke liye device se MP3 select karein:</p>
+      <h3 style="margin-bottom:14px; font-size:1.1rem;">Your Library</h3>
+      <div style="background:#181818; padding:16px; border-radius:12px; margin-bottom:18px; text-align:center;">
+        <p style="font-size:0.8rem; color:var(--text-sub); margin-bottom:10px;">Offline gaane sunne ke liye phone/PC se MP3 chunein:</p>
         <input type="file" id="localFileInput" accept="audio/*" style="display:none;">
-        <button class="btn-green" style="width:auto; padding:9px 24px; font-size:0.82rem;" onclick="document.getElementById('localFileInput').click()">+ Add Local MP3</button>
+        <button class="btn-green" style="width:auto; padding:8px 20px; font-size:0.8rem;" onclick="document.getElementById('localFileInput').click()">+ Add Local Song</button>
       </div>
 
-      <h4 style="font-size:0.95rem; color:#fff; margin-bottom:12px;">Favorite Songs</h4>
+      <h4 style="font-size:0.9rem; color:var(--text-sub); margin-bottom:10px;">Favorite Songs</h4>
       <div class="song-list" id="favResults"></div>
 
-      <h4 style="font-size:0.95rem; color:#fff; margin:22px 0 12px;">Device Offline Songs</h4>
+      <h4 style="font-size:0.9rem; color:var(--text-sub); margin:18px 0 10px;">Device Offline Songs</h4>
       <div class="song-list" id="offlineResults"></div>
     </div>
 
-    <!-- 3. PROFILE TAB -->
+    <!-- 3. PROFILE VIEW -->
     <div class="content-area hidden" id="viewProfile">
       <div class="profile-card">
         <div class="profile-avatar" id="avatarText">U</div>
-        <h2 id="profileName" style="font-size:1.35rem; font-weight:700;">User</h2>
-        <p id="profileEmail" style="font-size:0.82rem; color:var(--text-sub); margin-top:3px;">user@beatnest.com</p>
+        <h2 id="profileName" style="font-size:1.3rem; font-weight:700;">User</h2>
+        <p id="profileEmail" style="font-size:0.8rem; color:var(--text-sub); margin-top:2px;">user@beatnest.com</p>
         
         <div class="profile-stats">
           <div>
@@ -410,38 +395,35 @@
           </div>
           <div>
             <div class="stat-val" id="statPlayed">0</div>
-            <div class="stat-lbl">Tracks Played</div>
+            <div class="stat-lbl">Played</div>
           </div>
           <div>
-            <div class="stat-val">VIP</div>
-            <div class="stat-lbl">Membership</div>
+            <div class="stat-val" id="profileTierText" style="color:#aaa;">FREE</div>
+            <div class="stat-lbl">Plan</div>
           </div>
         </div>
 
-        <p style="font-size:0.78rem; color:var(--text-sub); line-height: 1.5;">
-          Engineered with ❤️ by <strong>Himanshu Mishra</strong><br>
-          Contact: <a href="mailto:himanshu120mishra@gmail.com">himanshu120mishra@gmail.com</a>
+        <button class="btn-green" id="manualVipBtn" style="background:var(--gold-vip); color:#000; margin-top:10px;">👑 BeatNest VIP / Redeem Pass</button>
+
+        <p style="font-size:0.75rem; color:#666; margin-top:16px;">
+          Engineered by <strong>Himanshu Mishra</strong><br>
+          himanshu120mishra@gmail.com
         </p>
       </div>
     </div>
 
-    <!-- FOOTER -->
-    <footer>
-      BeatNest Studio &bull; High-Fidelity Music Streaming
-    </footer>
-
-    <!-- PERSISTENT BOTTOM CONTROLLER -->
+    <!-- DOCK PLAYER -->
     <div class="bottom-player-dock hidden" id="playerDock">
       <div class="now-playing">
-        <div id="dockTitle" style="font-size:0.86rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Select a track to play</div>
-        <div id="dockSub" style="font-size:0.74rem; color:var(--text-sub); margin-top:2px;">BeatNest Audio Engine</div>
+        <div id="dockTitle" style="font-size:0.85rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Select Track</div>
+        <div id="dockSub" style="font-size:0.72rem; color:var(--text-sub); margin-top:2px;">BeatNest Engine</div>
       </div>
       <div class="player-video-box" id="videoBox">
-        <div style="font-size:0.72rem; color:#666; text-align:center; padding-top:36px;">Ready</div>
+        <div style="font-size:0.7rem; color:#666; text-align:center; padding-top:35px;">Ready</div>
       </div>
     </div>
 
-    <!-- SPOTIFY BOTTOM NAVIGATION BAR -->
+    <!-- SPOTIFY BOTTOM BAR -->
     <div class="spotify-navbar">
       <button class="nav-btn active" id="navSearch">
         <span class="nav-icon">🔍</span>
@@ -455,6 +437,35 @@
         <span class="nav-icon">👤</span>
         <span>My Profile</span>
       </button>
+    </div>
+  </div>
+
+  <!-- 🔒 SUBSCRIPTION & CODE POPUP -->
+  <div class="paywall-overlay hidden" id="paywallModal">
+    <div class="paywall-modal">
+      <div class="paywall-badge">👑</div>
+      <div class="paywall-title">Free Song Trial Expired!</div>
+      <p class="paywall-desc">
+        Aapne apna 1 free song use kar liya hai. Unlimited songs sunne ke liye VIP upgrade karein ya niche <strong>Secret Passcode</strong> enter karein.
+      </p>
+
+      <!-- PAID OPTION -->
+      <div class="vip-price-box">
+        <div class="vip-price">₹29 <span style="font-size:0.8rem; color:#aaa; font-weight:400;">/ Month</span></div>
+        <a href="upi://pay?pa=himanshu120mishra@gmail.com&pn=BeatNest%20VIP&am=29&cu=INR" 
+           class="btn-green" 
+           style="display:block; text-decoration:none; background:var(--gold-vip); color:#000; margin-top:8px; padding:10px; font-size:0.85rem;">
+           Pay ₹29 via UPI
+        </a>
+      </div>
+
+      <!-- FREE CODE REDEEM SECTION -->
+      <div class="free-box">
+        <p style="font-size:0.78rem; color:#fff; font-weight:600;">🔑 Enter Secret VIP Passcode:</p>
+        <input type="text" class="vip-code-input" id="vipCodeInput" placeholder="Password yahan likhein">
+        <button class="btn-green" id="verifyVipBtn" style="padding:10px; margin-top:10px; font-size:0.82rem; background:var(--spotify-green);">✨ Unlock Free VIP</button>
+        <p id="vipMsg" style="color:#f43f5e; font-size:0.72rem; margin-top:8px;"></p>
+      </div>
     </div>
   </div>
 
@@ -483,18 +494,19 @@
     const playerDock = document.getElementById('playerDock');
     const videoBox = document.getElementById('videoBox');
     const nativePlayer = document.getElementById('nativePlayer');
+    const paywallModal = document.getElementById('paywallModal');
 
     let currentPlaylist = [];
     let favorites = JSON.parse(localStorage.getItem('bn_favs') || '[]');
     let offlineTracks = [];
     let playedCount = parseInt(localStorage.getItem('bn_played') || '0', 10);
+    let isVipUser = localStorage.getItem('bn_is_vip') === 'true';
 
     onAuthStateChanged(auth, (user) => {
       if (user) enterApp(user.email.split('@')[0], user.email);
-      else if (sessionStorage.getItem('bn_guest')) enterApp('Himanshu (Guest)', 'guest@beatnest.com');
+      else if (sessionStorage.getItem('bn_guest')) enterApp('Guest User', 'guest@beatnest.com');
       else {
         appSection.classList.add('hidden');
-        playerDock.classList.add('hidden');
         authSection.classList.remove('hidden');
       }
     });
@@ -506,49 +518,59 @@
       document.getElementById('profileName').innerText = name;
       document.getElementById('profileEmail').innerText = email;
       document.getElementById('avatarText').innerText = name.charAt(0).toUpperCase();
+      syncVipUI();
       updateProfileStats();
     }
-
-    document.getElementById('loginBtn').onclick = async () => {
-      document.getElementById('authMsg').innerText = '';
-      try {
-        await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value);
-      } catch (err) {
-        document.getElementById('authMsg').innerText = err.message.replace('Firebase: ', '');
-      }
-    };
 
     document.getElementById('guestBtn').onclick = () => {
       sessionStorage.setItem('bn_guest', 'Guest');
       enterApp('Guest User', 'guest@beatnest.com');
     };
-
     document.getElementById('logoutBtn').onclick = () => {
       sessionStorage.removeItem('bn_guest');
       signOut(auth).catch(() => {});
       location.reload();
     };
 
-    // GUARANTEED PLAYBACK ENGINE
+    function syncVipUI() {
+      const headerBadge = document.getElementById('vipHeaderBadge');
+      const tierText = document.getElementById('profileTierText');
+      if (isVipUser) {
+        headerBadge.innerText = '👑 VIP PASS';
+        headerBadge.style.background = 'rgba(245, 158, 11, 0.2)';
+        headerBadge.style.color = '#f59e0b';
+        tierText.innerText = 'VIP (ACTIVE)';
+        tierText.style.color = '#f59e0b';
+        document.getElementById('manualVipBtn').style.display = 'none';
+      } else {
+        headerBadge.innerText = `FREE (${Math.max(0, 1 - playedCount)} Left)`;
+      }
+    }
+
     function playSong(track) {
+      if (!isVipUser && playedCount >= 1) {
+        paywallModal.classList.remove('hidden');
+        return;
+      }
+
       document.getElementById('dockTitle').innerText = track.title;
-      document.getElementById('dockSub').innerText = track.channel || "Playing Track";
+      document.getElementById('dockSub').innerText = track.channel || "Audio Playing";
 
       playedCount++;
       localStorage.setItem('bn_played', playedCount.toString());
       updateProfileStats();
+      syncVipUI();
 
       nativePlayer.pause();
 
       if (track.isOffline) {
-        videoBox.innerHTML = '<div style="color:var(--spotify-green); font-size:0.75rem; text-align:center; padding-top:38px;">Playing Local Audio</div>';
+        videoBox.innerHTML = '<div style="color:var(--spotify-green); font-size:0.75rem; text-align:center; padding-top:35px;">Offline MP3</div>';
         nativePlayer.src = track.audioUrl;
         nativePlayer.play();
       } else {
-        // Direct clean stream frame without CORS or host restrictions
         videoBox.innerHTML = `
           <iframe 
-            src="https://www.youtube.com/embed/${track.id}?autoplay=1&enablejsapi=1&playsinline=1" 
+            src="https://www.youtube-nocookie.com/embed/${track.id}?autoplay=1&playsinline=1&enablejsapi=1" 
             allow="autoplay; encrypted-media; picture-in-picture" 
             allowfullscreen>
           </iframe>
@@ -556,140 +578,12 @@
       }
     }
 
-    // SEARCH SONGS
-    async function doSearch() {
-      const q = document.getElementById('searchInput').value.trim();
-      if (!q) return;
-
-      const out = document.getElementById('searchResults');
-      out.innerHTML = '<p style="color:var(--text-sub); text-align:center; padding:20px;">Searching full songs...</p>';
-
-      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&videoDuration=medium&q=${encodeURIComponent(q + " full song")}&type=video&key=${YOUTUBE_API_KEY}`;
-
-      try {
-        const res = await fetch(url);
-        const data = await res.json();
-        if (data.error) {
-          out.innerHTML = `<p style="color:#f43f5e; text-align:center; padding:20px;">API Error: ${data.error.message}</p>`;
-          return;
-        }
-
-        currentPlaylist = (data.items || []).map(i => ({
-          id: i.id.videoId,
-          title: i.snippet.title.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&'),
-          channel: i.snippet.channelTitle,
-          thumb: i.snippet.thumbnails.medium ? i.snippet.thumbnails.medium.url : i.snippet.thumbnails.default.url,
-          isOffline: false
-        }));
-
-        renderSongs(currentPlaylist, out);
-      } catch (err) {
-        out.innerHTML = '<p style="color:#f43f5e; text-align:center; padding:20px;">Network error.</p>';
-      }
-    }
-
-    document.getElementById('searchBtn').onclick = doSearch;
-    document.getElementById('searchInput').onkeypress = (e) => { if (e.key === 'Enter') doSearch(); };
-
-    // RENDER SONGS WITH DIRECT DOWNLOAD
-    function renderSongs(list, target) {
-      target.innerHTML = '';
-      if (!list || list.length === 0) {
-        target.innerHTML = '<p style="color:var(--text-sub); text-align:center; padding:20px;">No tracks available.</p>';
-        return;
-      }
-
-      list.forEach(t => {
-        const isFav = favorites.some(f => f.id === t.id);
-        const row = document.createElement('div');
-        row.className = 'song-card';
-        row.innerHTML = `
-          <img class="song-thumb" src="${t.thumb || 'https://via.placeholder.com/50/282828/ffffff?text=MP3'}">
-          <div class="song-info">
-            <div class="song-title">${t.title}</div>
-            <div class="song-sub">${t.channel || 'Music Track'}</div>
-          </div>
-          <div class="action-icons">
-            ${!t.isOffline ? `<button class="action-btn download-btn" title="Download Audio">⬇️</button>` : ''}
-            ${!t.isOffline ? `<button class="action-btn fav-btn ${isFav ? 'fav-on' : ''}" title="Favorite">❤️</button>` : ''}
-          </div>
-        `;
-
-        row.querySelector('.song-info').onclick = () => playSong(t);
-
-        if (!t.isOffline) {
-          row.querySelector('.download-btn').onclick = (e) => {
-            e.stopPropagation();
-            window.open(`https://www.y2mate.com/youtube/${t.id}`, '_blank');
-          };
-
-          row.querySelector('.fav-btn').onclick = (e) => {
-            e.stopPropagation();
-            const idx = favorites.findIndex(f => f.id === t.id);
-            if (idx > -1) favorites.splice(idx, 1);
-            else favorites.push(t);
-            localStorage.setItem('bn_favs', JSON.stringify(favorites));
-            updateProfileStats();
-            renderSongs(list, target);
-          };
-        }
-
-        target.appendChild(row);
-      });
-    }
-
-    // LOCAL MP3 STORAGE
-    document.getElementById('localFileInput').onchange = (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        offlineTracks.push({
-          id: 'off_' + Date.now(),
-          title: file.name.replace(/\.[^/.]+$/, ""),
-          channel: "Local Storage Audio",
-          audioUrl: URL.createObjectURL(file),
-          isOffline: true
-        });
-        renderSongs(offlineTracks, document.getElementById('offlineResults'));
-      }
-    };
-
-    function updateProfileStats() {
-      document.getElementById('statFav').innerText = favorites.length;
-      document.getElementById('statPlayed').innerText = playedCount;
-    }
-
-    // NAVIGATION SWITCHER
-    const navSearch = document.getElementById('navSearch');
-    const navLibrary = document.getElementById('navLibrary');
-    const navProfile = document.getElementById('navProfile');
-
-    const viewSearch = document.getElementById('viewSearch');
-    const viewLibrary = document.getElementById('viewLibrary');
-    const viewProfile = document.getElementById('viewProfile');
-
-    function resetTabs() {
-      [navSearch, navLibrary, navProfile].forEach(n => n.classList.remove('active'));
-      [viewSearch, viewLibrary, viewProfile].forEach(v => v.classList.add('hidden'));
-    }
-
-    navSearch.onclick = () => {
-      resetTabs();
-      navSearch.classList.add('active');
-      viewSearch.classList.remove('hidden');
-    };
-    navLibrary.onclick = () => {
-      resetTabs();
-      navLibrary.classList.add('active');
-      viewLibrary.classList.remove('hidden');
-      renderSongs(favorites, document.getElementById('favResults'));
-      renderSongs(offlineTracks, document.getElementById('offlineResults'));
-    };
-    navProfile.onclick = () => {
-      resetTabs();
-      navProfile.classList.add('active');
-      viewProfile.classList.remove('hidden');
-      updateProfileStats();
-    };
-  </script>
-</body>
-</html>
+    // 🔑 AAPKA SECRET VIP PASSWORD CHECK
+    document.getElementById('verifyVipBtn').onclick = () => {
+      const enteredCode = document.getElementById('vipCodeInput').value.trim();
+      
+      // Exact password check: Himanshumishra@@8090@567
+      if (enteredCode === "Himanshumishra@@8090@567") {
+        localStorage.setItem('bn_is_vip', 'true');
+        isVipUser = true;
+       
