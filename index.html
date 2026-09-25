@@ -19,6 +19,7 @@
       --bn-muted: #94a3b8;
       --bn-border: rgba(255, 255, 255, 0.08);
       --bn-gold: #f59e0b;
+      --bn-purple: #5f259f;
       --bn-red: #ef4444;
       --bn-radius: 16px;
     }
@@ -29,7 +30,7 @@
     }
     body.theme-violet {
       --bn-accent: #8b5cf6;
-      --bn-accent-glow: rgba(139, 92, 246, 0.35);
+      --bn-accent-glow: rgba(139, 92, 246, 0.4);
     }
 
     * {
@@ -88,6 +89,7 @@
       background: rgba(245, 158, 11, 0.15);
       border-color: var(--bn-gold);
       color: var(--bn-gold);
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
     }
 
     /* MAIN VIEWPORT */
@@ -119,7 +121,7 @@
       padding: 8px 4px;
       outline: none;
     }
-    .search-btn, .clear-btn {
+    .clear-btn {
       background: none;
       border: none;
       color: var(--bn-muted);
@@ -320,6 +322,9 @@
       font-size: 0.88rem;
       cursor: pointer;
       margin-top: 12px;
+      display: block;
+      text-align: center;
+      text-decoration: none;
     }
 
     /* 🔴 PROPER REDESIGNED MUSIC PLAYER */
@@ -464,11 +469,11 @@
     .nav-btn.active .nav-icon { color: var(--bn-accent); }
     .nav-icon { font-size: 1.25rem; }
 
-    /* PAYWALL MODAL */
+    /* PAYWALL MODAL WITH PHONEPE QR & PASSCODE */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.88);
+      background: rgba(0, 0, 0, 0.92);
       backdrop-filter: blur(14px);
       z-index: 999;
       display: flex;
@@ -485,6 +490,50 @@
       width: 100%;
       text-align: center;
       box-shadow: 0 16px 40px rgba(245, 158, 11, 0.25);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .qr-container {
+      background: #000;
+      border: 1px solid var(--bn-purple);
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .qr-image-wrapper {
+      background: #fff;
+      padding: 8px;
+      border-radius: 8px;
+      display: inline-block;
+      margin: 8px 0;
+    }
+    .qr-image-wrapper img {
+      width: 170px;
+      height: 170px;
+      display: block;
+    }
+    .passcode-box {
+      background: #181b24;
+      border: 1px solid var(--bn-border);
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 14px;
+      text-align: center;
+    }
+    .passcode-input {
+      width: 100%;
+      padding: 11px 14px;
+      background: #0e1017;
+      border: 1px solid var(--bn-border);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 0.85rem;
+      margin-top: 8px;
+      text-align: center;
+      font-weight: 700;
     }
     .btn-secondary {
       background: none;
@@ -510,7 +559,7 @@
   <header class="app-header">
     <div class="brand-logo"><span>⚡</span> BEATNEST</div>
     <div>
-      <span id="headerPlanBadge" class="badge-limit" onclick="switchTab('profile')">Free songs remaining: 1</span>
+      <span id="headerPlanBadge" class="badge-limit" onclick="openPaywallModal()">Free songs remaining: 1</span>
     </div>
   </header>
 
@@ -557,7 +606,7 @@
       <p style="font-size:0.78rem; color:var(--bn-muted); line-height:1.4;">
         Unlimited music streaming, no daily play limit and full access to library features.
       </p>
-      <button class="btn-gold" onclick="switchTab('profile')">View Membership Details</button>
+      <button class="btn-gold" onclick="openPaywallModal()">View Membership Details</button>
     </div>
   </main>
 
@@ -654,26 +703,10 @@
         <button class="clear-link" onclick="clearAllData()">Reset All App Data</button>
       </div>
 
-      <!-- VIP SECTION -->
-      <div class="vip-upgrade-card" style="margin-top:20px;">
-        <div class="vip-head">
-          <div style="font-size:1.1rem; font-weight:800; color:var(--bn-gold);">👑 BEATNEST VIP</div>
-          <div class="vip-price-tag">₹29 / mo</div>
-        </div>
-        <ul style="font-size:0.78rem; color:var(--bn-muted); padding-left:16px; margin:8px 0; line-height:1.6;">
-          <li>Unlimited music access</li>
-          <li>No free-play daily limits</li>
-          <li>Offline device library acceleration</li>
-        </ul>
-        <a href="upi://pay?pa=himanshu120mishra@gmail.com&pn=Master%20HIMANSHU%20MISHRA1&am=29&cu=INR" 
-           class="btn-gold" 
-           style="display:block; text-align:center; text-decoration:none;">
-           Upgrade via UPI
-        </a>
-      </div>
+      <button class="btn-gold" onclick="openPaywallModal()" style="margin-top:20px;">👑 Manage VIP Membership & Passcode</button>
 
       <p style="font-size:0.72rem; color:#64748b; text-align:center; margin-top:20px;">
-        BEATNEST Music Application • Production v4.2<br>
+        BEATNEST Music Application • Production v4.3<br>
         Support: <strong style="color:#94a3b8;">support@beatnest.app</strong>
       </p>
     </div>
@@ -735,25 +768,50 @@
     </button>
   </nav>
 
-  <!-- PAYWALL MODAL (ONLY FIRES WHEN LIMIT REACHED) -->
+  <!-- 👑 PAYWALL & VIP ACTIVATION MODAL (PHONEPE QR + PASSCODE INCLUDED) -->
   <div class="modal-overlay hidden" id="limitPaywallModal">
     <div class="modal-sheet">
       <div style="font-size:2.5rem; margin-bottom:8px;">👑</div>
-      <div style="font-size:1.2rem; font-weight:800; color:var(--bn-gold);">Free limit reached</div>
-      <p style="font-size:0.8rem; color:var(--bn-muted); margin:6px 0 16px;">
-        Upgrade to VIP to continue enjoying unlimited streaming.
+      <div style="font-size:1.25rem; font-weight:800; color:var(--bn-gold);">BeatNest VIP Access</div>
+      <p style="font-size:0.8rem; color:var(--bn-muted); margin:6px 0 14px;">
+        Unlimited non-stop playback without any daily limits.
       </p>
 
-      <div style="background:rgba(245, 158, 11, 0.1); border:1px dashed var(--bn-gold); border-radius:12px; padding:12px; margin-bottom:14px;">
-        <div style="font-size:1.3rem; font-weight:800;">₹29 <span style="font-size:0.75rem; color:#aaa; font-weight:400;">/ Month</span></div>
+      <!-- PRICE & UPI -->
+      <div style="background:rgba(245, 158, 11, 0.08); border:1px dashed var(--bn-gold); border-radius:14px; padding:14px; margin-bottom:14px;">
+        <div style="font-size:1.35rem; font-weight:800;">₹29 <span style="font-size:0.75rem; color:#aaa; font-weight:400;">/ Month</span></div>
+        
         <a href="upi://pay?pa=himanshu120mishra@gmail.com&pn=Master%20HIMANSHU%20MISHRA1&am=29&cu=INR" 
            class="btn-gold" 
-           style="display:block; text-align:center; text-decoration:none; margin-top:8px;">
-           ⚡ Pay via UPI
+           style="margin-top:8px;">
+           ⚡ Open PhonePe / GPay App
         </a>
+
+        <button onclick="toggleQrView()" style="width:100%; padding:10px; background:#5f259f; color:#fff; border:none; border-radius:24px; font-weight:700; font-size:0.82rem; margin-top:8px; cursor:pointer;">
+          📷 View PhonePe QR Code
+        </button>
+
+        <div class="qr-container hidden" id="qrBox">
+          <p style="font-size:0.75rem; color:#a855f7; font-weight:700;">PhonePe Accepted Here</p>
+          <div class="qr-image-wrapper">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi%3A%2F%2Fpay%3Fpa%3Dhimanshu120mishra%40gmail.com%26pn%3DMaster%2520HIMANSHU%2520MISHRA1%26am%3D29%26cu%3DINR" alt="PhonePe QR Code">
+          </div>
+          <p style="font-size:0.72rem; color:#fff; font-weight:600;">Master HIMANSHU MISHRA1</p>
+          <p style="font-size:0.65rem; color:#888; margin-top:2px;">Scan with PhonePe, GPay or Paytm</p>
+        </div>
       </div>
 
-      <button class="btn-secondary" onclick="closePaywallModal()">Back to App</button>
+      <!-- SECRET PASSCODE UNLOCK -->
+      <div class="passcode-box">
+        <p style="font-size:0.78rem; color:#fff; font-weight:600;">🔑 Enter VIP Passcode:</p>
+        <input type="text" class="passcode-input" id="vipCodeInput" placeholder="Password yahan likhein">
+        <button onclick="verifyVipCode()" style="width:100%; padding:10px; background:var(--bn-accent); color:#fff; border:none; border-radius:24px; font-weight:700; font-size:0.82rem; margin-top:10px; cursor:pointer;">
+          ✨ Unlock VIP Now
+        </button>
+        <p id="vipMsg" style="color:var(--bn-red); font-size:0.72rem; margin-top:8px;"></p>
+      </div>
+
+      <button class="btn-secondary" onclick="closePaywallModal()">Close</button>
     </div>
   </div>
 
@@ -794,7 +852,6 @@
       updateDashboardStats();
       attachPlayerListeners();
 
-      // Theme restore
       const savedTheme = localStorage.getItem('bn_theme_pref');
       if (savedTheme) applyTheme(savedTheme, false);
     }
@@ -853,7 +910,6 @@
         localStorage.setItem('bn_usage_count', playedUsage.toString());
       }
 
-      // Manage Recently Played
       recentTracks = [track, ...recentTracks.filter(r => r.id !== track.id)].slice(0, 8);
       localStorage.setItem('bn_recents', JSON.stringify(recentTracks));
       renderRecents();
@@ -1000,7 +1056,6 @@
 
         card.querySelector('.track-meta').onclick = () => startPlayback(t, i, tracks);
 
-        // Download Action
         if (!t.isOffline) {
           card.querySelector('.btn-dl').onclick = (e) => {
             e.stopPropagation();
@@ -1014,7 +1069,6 @@
           };
         }
 
-        // Heart Action
         card.querySelector('.btn-fav').onclick = (e) => {
           e.stopPropagation();
           toggleFavorite(t);
@@ -1035,7 +1089,6 @@
       syncHeartButton();
       updateDashboardStats();
 
-      // Refresh current active tab view
       const activeTab = document.querySelector('.nav-btn.active').id;
       if (activeTab === 'navHome') renderTrackList(TRENDING_FEED, document.getElementById('homeTrendingList'));
     }
@@ -1132,12 +1185,28 @@
       window.open('https://ytmp3.nu/watch?v=' + activeTrack.id, '_blank');
     }
 
-    /* PAYWALL MODAL */
+    /* 👑 PAYWALL & PASSCODE VERIFICATION */
     function openPaywallModal() {
       document.getElementById('limitPaywallModal').classList.remove('hidden');
     }
     function closePaywallModal() {
       document.getElementById('limitPaywallModal').classList.add('hidden');
+    }
+    function toggleQrView() {
+      document.getElementById('qrBox').classList.toggle('hidden');
+    }
+
+    function verifyVipCode() {
+      const enteredCode = document.getElementById('vipCodeInput').value.trim();
+      if (enteredCode === "Himanshumishra@@8090@567") {
+        localStorage.setItem('bn_vip_member', 'true');
+        isVipUser = true;
+        closePaywallModal();
+        updateBadgeUI();
+        alert('🎉 Mubarak Ho! BeatNest VIP Pass Unlock Ho Gaya Hai!');
+      } else {
+        document.getElementById('vipMsg').innerText = 'Galat Passcode! Sahi code daalein ya UPI se pay karein.';
+      }
     }
 
     /* TAB SWITCHER */
@@ -1181,7 +1250,6 @@
       }
     }
 
-    // Initialize application runtime
     initApp();
   </script>
 </body>
