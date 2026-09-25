@@ -10,8 +10,8 @@
   <style>
     :root {
       --bn-accent: #2563eb;
-      --bn-accent-glow: rgba(37, 99, 235, 0.4);
-      --bn-bg: #08090d;
+      --bn-accent-glow: rgba(37, 99, 235, 0.35);
+      --bn-bg: #090a0f;
       --bn-surface: #11131a;
       --bn-card: #181b24;
       --bn-hover: #222634;
@@ -25,11 +25,11 @@
 
     body.theme-emerald {
       --bn-accent: #10b981;
-      --bn-accent-glow: rgba(16, 185, 129, 0.4);
+      --bn-accent-glow: rgba(16, 185, 129, 0.35);
     }
     body.theme-violet {
       --bn-accent: #8b5cf6;
-      --bn-accent-glow: rgba(139, 92, 246, 0.4);
+      --bn-accent-glow: rgba(139, 92, 246, 0.35);
     }
 
     * {
@@ -55,7 +55,7 @@
     /* HEADER */
     .app-header {
       padding: 14px 20px;
-      background: rgba(8, 9, 13, 0.95);
+      background: rgba(9, 10, 15, 0.95);
       backdrop-filter: blur(14px);
       display: flex;
       justify-content: space-between;
@@ -82,6 +82,7 @@
       border: 1px solid var(--bn-border);
       background: var(--bn-surface);
       color: var(--bn-muted);
+      cursor: pointer;
     }
     .badge-vip {
       background: rgba(245, 158, 11, 0.15);
@@ -89,10 +90,10 @@
       color: var(--bn-gold);
     }
 
-    /* SCROLL CONTAINER */
+    /* MAIN VIEWPORT */
     .main-viewport {
       flex: 1;
-      padding: 16px 16px 230px;
+      padding: 16px 16px 240px;
       max-width: 900px;
       margin: 0 auto;
       width: 100%;
@@ -139,6 +140,28 @@
       font-size: 0.85rem;
     }
 
+    /* HERO NOW-PLAYING BANNER */
+    .hero-banner {
+      background: linear-gradient(180deg, var(--bn-surface) 0%, var(--bn-card) 100%);
+      border-radius: 20px;
+      padding: 22px;
+      border: 1px solid var(--bn-border);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    .hero-banner-thumb {
+      width: 86px;
+      height: 86px;
+      border-radius: 14px;
+      object-fit: cover;
+      box-shadow: 0 8px 20px var(--bn-accent-glow);
+    }
+    .hero-banner-info h2 { font-size: 1.15rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hero-banner-info p { font-size: 0.78rem; color: var(--bn-muted); margin-top: 4px; }
+
     /* SECTION HEADERS */
     .section-title {
       font-size: 1.05rem;
@@ -173,8 +196,8 @@
       border-color: rgba(255, 255, 255, 0.15);
     }
     .track-art {
-      width: 52px;
-      height: 52px;
+      width: 50px;
+      height: 50px;
       border-radius: 8px;
       object-fit: cover;
       background: #000;
@@ -224,7 +247,7 @@
     .empty-head { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
     .empty-sub { font-size: 0.78rem; color: var(--bn-muted); max-width: 320px; margin: 0 auto; line-height: 1.4; }
 
-    /* PROFILE & CARDS */
+    /* PROFILE & PANELS */
     .card-panel {
       background: var(--bn-surface);
       border-radius: var(--bn-radius);
@@ -299,7 +322,7 @@
       margin-top: 12px;
     }
 
-    /* 🔴 REDESIGNED MUSIC PLAYER (STICKY BOTTOM MINI-DOCK) */
+    /* 🔴 PROPER REDESIGNED MUSIC PLAYER */
     .master-player {
       position: fixed;
       bottom: 60px;
@@ -477,7 +500,7 @@
     @media (max-width: 480px) {
       .player-extras .volume-slider { display: none; }
       .player-artwork { width: 42px; height: 42px; }
-      .main-viewport { padding-bottom: 210px; }
+      .main-viewport { padding-bottom: 220px; }
     }
   </style>
 </head>
@@ -497,6 +520,15 @@
       <span style="color:var(--bn-muted);">🔍</span>
       <input type="text" id="homeSearchInput" class="search-input" placeholder="Search song or artist...">
       <button class="search-submit-btn" onclick="triggerSearchFromHome()">Find</button>
+    </div>
+
+    <!-- HERO NOW PLAYING BANNER -->
+    <div class="hero-banner">
+      <img id="heroHomeCover" class="hero-banner-thumb" src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=250&q=80" alt="Cover">
+      <div class="hero-banner-info">
+        <h2 id="homeWelcomeTitle">🎵 Ready to play</h2>
+        <p id="homeWelcomeSub">Select a song to start listening.</p>
+      </div>
     </div>
 
     <div class="section-title">
@@ -551,7 +583,7 @@
     </div>
   </main>
 
-  <!-- VIEW: LIBRARY (OFFLINE + FAVORITES) -->
+  <!-- VIEW: LIBRARY -->
   <main class="main-viewport hidden" id="viewLibrary">
     <div class="card-panel" style="text-align:center; border-style:dashed;">
       <div style="font-size:1.05rem; font-weight:700; margin-bottom:4px;">📥 Play Offline Songs (No Internet)</div>
@@ -584,7 +616,7 @@
     </div>
   </main>
 
-  <!-- VIEW: PROFILE / SETTINGS -->
+  <!-- VIEW: PROFILE -->
   <main class="main-viewport hidden" id="viewProfile">
     <div class="card-panel">
       <div class="profile-hero">
@@ -802,6 +834,11 @@
       document.getElementById('playerArtist').innerText = track.channel || "Audio Track";
       document.getElementById('playerCover').src = track.thumb || "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=120&q=80";
 
+      // Update Home Hero
+      document.getElementById('homeWelcomeTitle').innerText = track.title;
+      document.getElementById('homeWelcomeSub').innerText = track.channel || "Now Playing";
+      document.getElementById('heroHomeCover').src = track.thumb || "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=250&q=80";
+
       const audio = document.getElementById('coreNativePlayer');
       const embedBox = document.getElementById('streamContainer');
       audio.pause();
@@ -905,7 +942,7 @@
       const container = document.getElementById('searchResultsList');
       container.innerHTML = '<p style="color:var(--bn-muted); text-align:center; padding:30px;">Searching music catalogue...</p>';
 
-      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${encodeURIComponent(q + " song")}&type=video&key=${YOUTUBE_API_KEY}`;
+      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${encodeURIComponent(q + " full song")}&type=video&key=${YOUTUBE_API_KEY}`;
 
       fetch(url)
         .then(r => r.json())
