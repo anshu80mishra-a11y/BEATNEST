@@ -3,32 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>BeatNest Music</title>
+  <title>BeatNest Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary-color: #1db954;
-      --primary-glow: rgba(29, 185, 84, 0.35);
-      --bg-base: #0c0d10;
-      --bg-surface: #14161d;
-      --bg-card: #1c1f2b;
-      --bg-hover: #262a3b;
-      --text-main: #ffffff;
-      --text-sub: #94a3b8;
-      --gold-vip: #f59e0b;
-      --border-subtle: rgba(255, 255, 255, 0.08);
-    }
-
-    /* THEME VARIATIONS */
-    body.theme-neon {
-      --primary-color: #06b6d4;
-      --primary-glow: rgba(6, 182, 212, 0.35);
-    }
-    body.theme-violet {
-      --primary-color: #8b5cf6;
-      --primary-glow: rgba(139, 92, 246, 0.35);
+      --bn-primary: #3b82f6; /* BeatNest Electric Blue */
+      --bn-primary-glow: rgba(59, 130, 246, 0.35);
+      --bn-bg: #090a0f;
+      --bn-surface: #12141c;
+      --bn-card: #1a1d28;
+      --bn-hover: #232736;
+      --bn-text: #ffffff;
+      --bn-sub: #94a3b8;
+      --bn-gold: #f59e0b;
+      --bn-border: rgba(255, 255, 255, 0.08);
+      --bn-danger: #ef4444;
     }
 
     * {
@@ -39,20 +30,22 @@
       -webkit-tap-highlight-color: transparent;
       user-select: none;
     }
+
     body {
-      background-color: var(--bg-base);
-      color: var(--text-main);
+      background-color: var(--bn-bg);
+      color: var(--bn-text);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       overflow-x: hidden;
     }
+
     .hidden { display: none !important; }
 
     /* HEADER */
-    .top-header {
-      padding: 14px 20px;
-      background: rgba(12, 13, 16, 0.95);
+    .app-header {
+      padding: 14px 18px;
+      background: rgba(9, 10, 15, 0.95);
       backdrop-filter: blur(16px);
       display: flex;
       justify-content: space-between;
@@ -60,183 +53,109 @@
       position: sticky;
       top: 0;
       z-index: 50;
-      border-bottom: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--bn-border);
     }
-    .brand-title {
-      font-size: 1.3rem;
+    .brand-logo {
+      font-size: 1.25rem;
       font-weight: 800;
       letter-spacing: -0.5px;
       display: flex;
       align-items: center;
       gap: 8px;
     }
-    .brand-title span { color: var(--primary-color); }
-    .badge-tier {
+    .brand-logo span { color: var(--bn-primary); }
+    
+    .plan-badge {
       font-size: 0.68rem;
       font-weight: 700;
-      padding: 4px 10px;
+      padding: 5px 12px;
       border-radius: 20px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      cursor: pointer;
     }
-    .badge-normal {
+    .badge-free {
       background: rgba(255, 255, 255, 0.08);
-      color: var(--text-sub);
-      border: 1px solid var(--border-subtle);
+      color: var(--bn-sub);
+      border: 1px solid var(--bn-border);
     }
     .badge-vip {
       background: rgba(245, 158, 11, 0.2);
-      color: var(--gold-vip);
-      border: 1px solid var(--gold-vip);
-      box-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
+      color: var(--bn-gold);
+      border: 1px solid var(--bn-gold);
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
     }
 
-    .content-area {
+    .page-content {
       flex: 1;
-      padding: 16px 20px 180px;
-      max-width: 820px;
+      padding: 16px 18px 230px;
+      max-width: 850px;
       margin: 0 auto;
       width: 100%;
     }
 
-    /* HERO SECTION */
-    .hero-container {
-      background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-card) 100%);
-      border-radius: 24px;
-      padding: 24px 20px;
-      border: 1px solid var(--border-subtle);
-      margin-bottom: 24px;
-      text-align: center;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
-    }
-    .hero-art-wrapper {
-      position: relative;
-      width: 170px;
-      height: 170px;
-      margin: 0 auto 18px;
-    }
-    .hero-art {
-      width: 100%;
-      height: 100%;
+    /* HOME HERO SECTION */
+    .hero-banner {
+      background: linear-gradient(180deg, var(--bn-surface) 0%, var(--bn-card) 100%);
       border-radius: 20px;
+      padding: 22px;
+      border: 1px solid var(--bn-border);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .hero-banner-thumb {
+      width: 90px;
+      height: 90px;
+      border-radius: 14px;
       object-fit: cover;
-      box-shadow: 0 10px 30px var(--primary-glow);
-      transition: transform 0.3s ease;
+      box-shadow: 0 8px 20px var(--bn-primary-glow);
     }
-    .hero-art.playing {
-      animation: pulseRecord 6s linear infinite alternate;
-    }
-    @keyframes pulseRecord {
-      0% { transform: scale(1); }
-      100% { transform: scale(1.04); }
-    }
-    .hero-title {
-      font-size: 1.25rem;
-      font-weight: 800;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin-bottom: 4px;
-    }
-    .hero-artist {
-      font-size: 0.85rem;
-      color: var(--text-sub);
-      margin-bottom: 18px;
-    }
-    .seek-container {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-    .seek-bar {
-      flex: 1;
-      accent-color: var(--primary-color);
-      height: 4px;
-      cursor: pointer;
-    }
-    .seek-time { font-size: 0.72rem; color: var(--text-sub); }
-    .hero-controls {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 24px;
-      margin-bottom: 16px;
-    }
-    .ctrl-btn {
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: 1.4rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.15s ease;
-    }
-    .ctrl-btn:active { transform: scale(0.85); }
-    .play-btn-main {
-      width: 54px;
-      height: 54px;
-      border-radius: 50%;
-      background: var(--primary-color);
-      color: #000;
-      font-size: 1.5rem;
-      box-shadow: 0 6px 20px var(--primary-glow);
-    }
-    .volume-box {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      max-width: 200px;
-      margin: 0 auto;
-    }
-    .vol-slider {
-      width: 100px;
-      accent-color: var(--primary-color);
-      height: 4px;
-    }
+    .hero-banner-info h2 { font-size: 1.15rem; font-weight: 800; }
+    .hero-banner-info p { font-size: 0.78rem; color: var(--bn-sub); margin-top: 4px; }
 
-    /* SEARCH BAR & CARDS */
-    .search-box {
+    /* SEARCH BAR */
+    .search-bar {
       display: flex;
       gap: 10px;
       margin-bottom: 20px;
     }
-    .search-box input {
+    .search-bar input {
       flex: 1;
       padding: 14px 18px;
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
+      background: var(--bn-surface);
+      border: 1px solid var(--bn-border);
       border-radius: 24px;
       color: #fff;
       font-size: 0.9rem;
       outline: none;
     }
-    .search-box input:focus { border-color: var(--primary-color); }
-    .search-btn {
+    .search-bar input:focus { border-color: var(--bn-primary); }
+    .search-submit-btn {
       padding: 0 24px;
-      background: var(--primary-color);
-      color: #000;
+      background: var(--bn-primary);
+      color: #fff;
       font-weight: 700;
       border: none;
       border-radius: 24px;
       cursor: pointer;
     }
-    .song-list { display: flex; flex-direction: column; gap: 8px; }
-    .song-card {
+
+    /* TRACK CARDS */
+    .track-list { display: flex; flex-direction: column; gap: 8px; }
+    .track-card {
       display: flex;
       align-items: center;
       gap: 12px;
       padding: 10px 14px;
-      background: var(--bg-surface);
+      background: var(--bn-surface);
       border-radius: 12px;
-      border: 1px solid var(--border-subtle);
+      border: 1px solid var(--bn-border);
       transition: background 0.2s;
     }
-    .song-card:hover { background: var(--bg-hover); }
-    .song-thumb {
+    .track-card:hover { background: var(--bn-hover); }
+    .track-thumb {
       width: 50px;
       height: 50px;
       border-radius: 8px;
@@ -244,175 +163,227 @@
       background: #000;
       flex-shrink: 0;
     }
-    .song-info { flex: 1; overflow: hidden; cursor: pointer; }
-    .song-name {
+    .track-details { flex: 1; overflow: hidden; cursor: pointer; }
+    .track-name {
       font-size: 0.9rem;
       font-weight: 600;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .song-sub { font-size: 0.74rem; color: var(--text-sub); margin-top: 3px; }
-    .song-actions { display: flex; align-items: center; gap: 14px; }
-    .action-icon {
+    .track-artist { font-size: 0.74rem; color: var(--bn-sub); margin-top: 3px; }
+    .track-actions { display: flex; align-items: center; gap: 14px; }
+    .btn-icon {
       background: none;
       border: none;
-      color: var(--text-sub);
+      color: var(--bn-sub);
       font-size: 1.15rem;
       cursor: pointer;
     }
-    .fav-active { color: #f43f5e !important; }
+    .fav-heart-active { color: #f43f5e !important; }
 
     /* EMPTY STATES */
     .empty-state {
       padding: 40px 20px;
       text-align: center;
-      background: var(--bg-surface);
+      background: var(--bn-surface);
       border-radius: 16px;
-      border: 1px dashed var(--border-subtle);
+      border: 1px dashed var(--bn-border);
       margin: 14px 0;
     }
     .empty-state-icon { font-size: 2.5rem; margin-bottom: 10px; }
     .empty-state-title { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
-    .empty-state-desc { font-size: 0.78rem; color: var(--text-sub); max-width: 320px; margin: 0 auto; }
+    .empty-state-desc { font-size: 0.78rem; color: var(--bn-sub); max-width: 320px; margin: 0 auto; }
 
     /* PROFILE & SETTINGS */
-    .profile-card {
-      background: var(--bg-surface);
+    .profile-box {
+      background: var(--bn-surface);
       border-radius: 20px;
       padding: 24px;
-      border: 1px solid var(--border-subtle);
+      border: 1px solid var(--bn-border);
     }
-    .avatar-wrapper {
-      position: relative;
-      width: 86px;
-      height: 86px;
-      margin: 0 auto 12px;
-    }
-    .profile-avatar {
-      width: 100%;
-      height: 100%;
+    .profile-avatar-circle {
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary-color), #111);
+      background: linear-gradient(135deg, var(--bn-primary), #111);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 2.2rem;
-      border: 2px solid var(--primary-color);
+      border: 2px solid var(--bn-primary);
+      margin: 0 auto 12px;
     }
-    .stat-grid {
+    .stat-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
       margin: 20px 0;
       padding: 14px 0;
-      border-top: 1px solid var(--border-subtle);
-      border-bottom: 1px solid var(--border-subtle);
+      border-top: 1px solid var(--bn-border);
+      border-bottom: 1px solid var(--bn-border);
       text-align: center;
     }
-    .stat-number { font-size: 1.25rem; font-weight: 800; color: var(--primary-color); }
-    .stat-label { font-size: 0.72rem; color: var(--text-sub); margin-top: 2px; }
-    .settings-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border-subtle);
-      font-size: 0.85rem;
-    }
+    .stat-num { font-size: 1.25rem; font-weight: 800; color: var(--bn-primary); }
+    .stat-lbl { font-size: 0.72rem; color: var(--bn-sub); margin-top: 2px; }
 
-    /* MINI PLAYER (STICKY DOCK) */
-    .mini-player {
+    /* 🔴 PROPER FULL-FEATURED BOTTOM PLAYER */
+    .master-player {
       position: fixed;
       bottom: 60px;
       left: 0;
       width: 100%;
-      background: rgba(20, 22, 29, 0.96);
-      backdrop-filter: blur(16px);
-      border-top: 1px solid var(--border-subtle);
-      padding: 10px 16px;
+      background: rgba(18, 20, 28, 0.98);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--bn-border);
+      padding: 12px 18px;
+      z-index: 95;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .player-upper {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      z-index: 90;
+      gap: 12px;
     }
-    .mini-info { display: flex; align-items: center; gap: 10px; flex: 1; overflow: hidden; cursor: pointer; }
-    .mini-thumb { width: 44px; height: 44px; border-radius: 6px; object-fit: cover; }
-    .mini-text { flex: 1; overflow: hidden; }
-    .mini-title { font-size: 0.82rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .mini-sub { font-size: 0.7rem; color: var(--text-sub); }
-    .stream-frame-box {
-      width: 90px;
-      height: 52px;
+    .player-track-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      overflow: hidden;
+    }
+    .player-cover {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #000;
+      flex-shrink: 0;
+    }
+    .player-meta { flex: 1; overflow: hidden; }
+    .player-song-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .player-song-artist { font-size: 0.72rem; color: var(--bn-sub); margin-top: 2px; }
+
+    .player-center-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .p-ctrl-btn {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.25rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .p-ctrl-play {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--bn-primary);
+      color: #fff;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 14px var(--bn-primary-glow);
+    }
+    .player-right-dock {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .vol-slider {
+      width: 70px;
+      accent-color: var(--bn-primary);
+      height: 4px;
+    }
+    .stream-embed-box {
+      width: 80px;
+      height: 45px;
       border-radius: 6px;
       overflow: hidden;
       background: #000;
       flex-shrink: 0;
     }
-    .stream-frame-box iframe { width: 100%; height: 100%; border: none; }
+    .stream-embed-box iframe { width: 100%; height: 100%; border: none; }
 
-    /* BOTTOM NAV */
-    .bottom-nav {
+    /* PROGRESS BAR */
+    .player-progress-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+    }
+    .p-seek {
+      flex: 1;
+      height: 4px;
+      accent-color: var(--bn-primary);
+      cursor: pointer;
+    }
+    .p-time { font-size: 0.68rem; color: var(--bn-sub); }
+
+    /* BOTTOM NAVBAR */
+    .mobile-navbar {
       position: fixed;
       bottom: 0;
       left: 0;
       width: 100%;
       height: 60px;
-      background: var(--bg-base);
-      border-top: 1px solid var(--border-subtle);
+      background: var(--bn-bg);
+      border-top: 1px solid var(--bn-border);
       display: flex;
       justify-content: space-around;
       align-items: center;
       z-index: 100;
     }
-    .nav-item {
+    .nav-tab {
       display: flex;
       flex-direction: column;
       align-items: center;
       background: none;
       border: none;
-      color: var(--text-sub);
+      color: var(--bn-sub);
       font-size: 0.72rem;
       font-weight: 600;
       gap: 3px;
       cursor: pointer;
     }
-    .nav-item.active { color: #fff; }
-    .nav-item.active span.icon { color: var(--primary-color); }
-    .nav-item span.icon { font-size: 1.25rem; }
+    .nav-tab.active { color: #fff; }
+    .nav-tab.active .nav-icon { color: var(--bn-primary); }
+    .nav-icon { font-size: 1.25rem; }
 
     /* PAYWALL MODAL */
-    .modal-overlay {
+    .paywall-modal {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.88);
-      backdrop-filter: blur(12px);
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(14px);
       z-index: 999;
       display: flex;
       justify-content: center;
       align-items: center;
       padding: 16px;
     }
-    .modal-sheet {
-      background: var(--bg-surface);
-      border: 1px solid var(--gold-vip);
+    .paywall-sheet {
+      background: var(--bn-surface);
+      border: 1px solid var(--bn-gold);
       border-radius: 24px;
       padding: 24px;
       max-width: 400px;
       width: 100%;
       text-align: center;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: 0 20px 50px rgba(245, 158, 11, 0.25);
+      box-shadow: 0 16px 40px rgba(245, 158, 11, 0.25);
     }
-    .limit-progress-bar {
-      height: 6px;
-      background: #2a2d3d;
-      border-radius: 4px;
-      margin: 12px 0 16px;
-      overflow: hidden;
-    }
-    .limit-fill { height: 100%; width: 100%; background: #ef4444; }
     .btn-action {
       width: 100%;
       padding: 12px;
@@ -423,14 +394,14 @@
       cursor: pointer;
       margin-top: 10px;
     }
-    .btn-primary { background: var(--primary-color); color: #000; }
-    .btn-gold { background: var(--gold-vip); color: #000; }
-    .passcode-input {
+    .btn-gold { background: var(--bn-gold); color: #000; }
+    .btn-primary { background: var(--bn-primary); color: #fff; }
+    .pass-input {
       width: 100%;
-      padding: 12px;
-      background: #0f1015;
-      border: 1px solid var(--border-subtle);
-      border-radius: 10px;
+      padding: 11px;
+      background: #0b0c10;
+      border: 1px solid var(--bn-border);
+      border-radius: 8px;
       color: #fff;
       font-size: 0.85rem;
       text-align: center;
@@ -440,262 +411,238 @@
 </head>
 <body>
 
-  <!-- HEADER -->
-  <div class="top-header">
-    <div class="brand-title"><span>⚡</span> BeatNest</div>
+  <!-- TOP HEADER -->
+  <div class="app-header">
+    <div class="brand-logo"><span>⚡</span> BeatNest Studio</div>
     <div style="display:flex; align-items:center; gap:8px;">
-      <span id="vipBadge" class="badge-tier badge-normal">FREE PLAN (1/1 LEFT)</span>
+      <span id="headerPlanBadge" class="plan-badge badge-free" onclick="openMembership()">👑 Upgrade to VIP</span>
     </div>
   </div>
 
-  <!-- VIEW: HOME (HERO PLAYER + TRENDING) -->
-  <div class="content-area" id="viewHome">
-    <div class="hero-container">
-      <div class="hero-art-wrapper">
-        <img id="heroArt" class="hero-art" src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=400&q=80" alt="Artwork">
-      </div>
-      <div class="hero-title" id="heroTitle">Select a track to start</div>
-      <div class="hero-artist" id="heroArtist">BeatNest Studio Engine</div>
-
-      <!-- PROGRESS SEEKBAR -->
-      <div class="seek-container">
-        <span class="seek-time" id="currTime">0:00</span>
-        <input type="range" class="seek-bar" id="seekSlider" min="0" max="100" value="0" oninput="manualSeek(this.value)">
-        <span class="seek-time" id="totalDuration">3:30</span>
-      </div>
-
-      <!-- CONTROLS -->
-      <div class="hero-controls">
-        <button class="ctrl-btn" onclick="prevSong()" title="Previous">⏮️</button>
-        <button class="ctrl-btn play-btn-main" id="heroPlayBtn" onclick="togglePlayPause()" title="Play/Pause">▶</button>
-        <button class="ctrl-btn" onclick="nextSong()" title="Next">⏭️</button>
-      </div>
-
-      <!-- VOLUME -->
-      <div class="volume-box">
-        <span style="font-size:0.8rem; color:var(--text-sub);">🔈</span>
-        <input type="range" class="vol-slider" min="0" max="1" step="0.05" value="1" oninput="changeVolume(this.value)">
-        <span style="font-size:0.8rem; color:var(--text-sub);">🔊</span>
+  <!-- 1. HOME VIEW -->
+  <div class="page-content" id="viewHome">
+    <div class="hero-banner">
+      <img id="heroHomeCover" class="hero-banner-thumb" src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=250&q=80">
+      <div class="hero-banner-info">
+        <h2 id="homeWelcomeTitle">🎵 Ready to play</h2>
+        <p id="homeWelcomeSub">Select a song to start listening.</p>
       </div>
     </div>
 
-    <!-- QUICK PICKS SECTION -->
-    <h3 style="font-size:1rem; margin-bottom:12px; font-weight:700;">Top Recommendations</h3>
-    <div class="song-list" id="homeFeedList"></div>
+    <h3 style="font-size:1rem; margin-bottom:12px; font-weight:700;">Trending Tracks</h3>
+    <div class="track-list" id="homeFeedList"></div>
   </div>
 
-  <!-- VIEW: SEARCH -->
-  <div class="content-area hidden" id="viewSearch">
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Search track, artist or album...">
-      <button class="search-btn" onclick="executeSearch()">Search</button>
+  <!-- 2. SEARCH VIEW -->
+  <div class="page-content hidden" id="viewSearch">
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search song, artist or album...">
+      <button class="search-submit-btn" onclick="executeSearch()">Search</button>
     </div>
-    <div class="song-list" id="searchContainer">
+    <div class="track-list" id="searchResultsList">
       <div class="empty-state">
         <div class="empty-state-icon">🔍</div>
         <div class="empty-state-title">Search What You Love</div>
-        <div class="empty-state-desc">Discover millions of tracks from international & regional creators.</div>
+        <div class="empty-state-desc">Find your favorite artists, genres and viral songs.</div>
       </div>
     </div>
   </div>
 
-  <!-- VIEW: LIBRARY -->
-  <div class="content-area hidden" id="viewLibrary">
-    <div style="background:var(--bg-surface); padding:20px; border-radius:16px; margin-bottom:20px; text-align:center; border:1px dashed var(--border-subtle);">
-      <p style="font-size:0.9rem; font-weight:700; margin-bottom:4px;">Offline Device Hub</p>
-      <p style="font-size:0.75rem; color:var(--text-sub); margin-bottom:14px;">Import audio directly from device storage (Runs 100% without data).</p>
-      <input type="file" id="localFileInput" accept="audio/*" multiple style="display:none;" onchange="importLocalAudio(event)">
-      <button class="btn-action btn-primary" style="width:auto; padding:8px 24px;" onclick="document.getElementById('localFileInput').click()">+ Add Local Songs</button>
+  <!-- 3. LIBRARY VIEW (OFFLINE + FAVORITES) -->
+  <div class="page-content hidden" id="viewLibrary">
+    <div style="background:var(--bn-surface); padding:20px; border-radius:16px; margin-bottom:20px; text-align:center; border:1px dashed var(--bn-border);">
+      <p style="font-size:0.9rem; font-weight:700; margin-bottom:4px;">📥 Play Offline Songs (No Internet)</p>
+      <p style="font-size:0.75rem; color:var(--bn-sub); margin-bottom:12px;">Add audio files directly from phone storage to listen offline.</p>
+      <input type="file" id="localAudioInput" accept="audio/*" multiple style="display:none;" onchange="importLocalSongs(event)">
+      <button class="btn-action btn-primary" style="width:auto; padding:8px 24px;" onclick="document.getElementById('localAudioInput').click()">+ Add Local Audio Files</button>
     </div>
 
-    <h4 style="font-size:0.92rem; color:var(--text-sub); margin-bottom:10px;">Device Offline Storage (<span id="offlineCount">0</span>)</h4>
-    <div id="offlineContainer">
+    <h4 style="font-size:0.92rem; color:var(--bn-sub); margin-bottom:10px;">Device Offline Songs (<span id="offlineCount">0</span>)</h4>
+    <div id="offlineSongsList">
       <div class="empty-state">
-        <div class="empty-state-icon">🎵</div>
+        <div class="empty-state-icon">🎧</div>
         <div class="empty-state-title">No offline songs yet</div>
-        <div class="empty-state-desc">Add MP3 files from your device to start listening without internet.</div>
+        <div class="empty-state-desc">Add MP3 files from your device to listen without internet.</div>
       </div>
     </div>
 
-    <h4 style="font-size:0.92rem; color:var(--text-sub); margin:24px 0 10px;">Favorite Online Tracks</h4>
-    <div id="favContainer">
+    <h4 style="font-size:0.92rem; color:var(--bn-sub); margin:24px 0 10px;">Favorite Online Tracks</h4>
+    <div id="favoriteSongsList">
       <div class="empty-state">
         <div class="empty-state-icon">❤️</div>
         <div class="empty-state-title">No favorites saved</div>
-        <div class="empty-state-desc">Tap heart icon on any song card to save it here.</div>
+        <div class="empty-state-desc">Tap the heart icon on any track to save it here.</div>
       </div>
     </div>
   </div>
 
-  <!-- VIEW: ACCOUNT & SETTINGS -->
-  <div class="content-area hidden" id="viewAccount">
-    <div class="profile-card">
-      <div class="avatar-wrapper">
-        <div class="profile-avatar" id="avatarDisplay">🎧</div>
-      </div>
-      <h2 style="font-size:1.25rem; font-weight:800; text-align:center;">BeatNest Listener</h2>
-      <p style="font-size:0.75rem; color:var(--text-sub); text-align:center; margin-top:2px;" id="profileEmail">free-tier@beatnest.app</p>
+  <!-- 4. PROFILE / ACCOUNT VIEW -->
+  <div class="page-content hidden" id="viewProfile">
+    <div class="profile-box">
+      <div class="profile-avatar-circle">⚡</div>
+      <h2 style="font-size:1.2rem; font-weight:800; text-align:center;">My Library & Account</h2>
+      <p style="font-size:0.75rem; color:var(--bn-sub); text-align:center; margin-top:2px;" id="profileTierText">Plan: Free Member</p>
 
-      <div class="stat-grid">
+      <div class="stat-row">
         <div>
-          <div class="stat-number" id="statFav">0</div>
-          <div class="stat-label">Favorites</div>
+          <div class="stat-num" id="statFav">0</div>
+          <div class="stat-lbl">Favorites</div>
         </div>
         <div>
-          <div class="stat-number" id="statPlayed">0</div>
-          <div class="stat-label">Played</div>
+          <div class="stat-num" id="statPlayed">0</div>
+          <div class="stat-lbl">Played</div>
         </div>
         <div>
-          <div class="stat-number" id="statTier">FREE</div>
-          <div class="stat-label">Tier</div>
+          <div class="stat-num" id="statOffline">0</div>
+          <div class="stat-lbl">Offline MP3</div>
         </div>
       </div>
 
-      <h4 style="font-size:0.85rem; margin-bottom:8px; color:var(--text-sub);">App Preferences</h4>
-      <div class="settings-row">
-        <span>App Theme</span>
-        <select onchange="changeTheme(this.value)" style="background:#111; color:#fff; border:1px solid #333; padding:5px 10px; border-radius:8px;">
-          <option value="emerald">Emerald (Spotify)</option>
-          <option value="neon">Neon Blue</option>
-          <option value="violet">Deep Violet</option>
-        </select>
-      </div>
-      <div class="settings-row">
-        <span>Daily Free Quota</span>
-        <span style="color:var(--primary-color); font-weight:700;">1 Track / Day</span>
+      <h4 style="font-size:0.85rem; color:var(--bn-sub); margin-bottom:8px;">Recently Played</h4>
+      <div class="track-list" id="recentlyPlayedList">
+        <p style="font-size:0.75rem; color:var(--bn-sub); text-align:center; padding:10px;">No tracks played recently.</p>
       </div>
 
-      <button class="btn-action btn-gold" id="upgradeBannerBtn" onclick="openPaywallModal()">👑 Manage Membership / Passcode</button>
+      <button class="btn-action btn-gold" onclick="openMembership()" style="margin-top:16px;">👑 Subscription & VIP Upgrade</button>
 
       <p style="font-size:0.72rem; color:#64748b; text-align:center; margin-top:20px;">
-        BeatNest Music Engine • v3.2.0 Production<br>
-        Support: <strong style="color:#94a3b8;">support@beatnest.app</strong>
+        BeatNest Music Engine • v4.0<br>
+        Contact: <strong style="color:#94a3b8;">support@beatnest.app</strong>
       </p>
     </div>
   </div>
 
-  <!-- STICKY MINI PLAYER DOCK -->
-  <div class="mini-player" id="miniDock">
-    <div class="mini-info" onclick="switchTab('home')">
-      <img id="miniThumb" class="mini-thumb" src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=100&q=80">
-      <div class="mini-text">
-        <div class="mini-title" id="miniTitle">Ready to Stream</div>
-        <div class="mini-sub" id="miniSub">Select track</div>
+  <!-- 🔴 1. PROPER FULL-FEATURED MUSIC PLAYER -->
+  <div class="master-player" id="masterPlayer">
+    <div class="player-upper">
+      <div class="player-track-info" onclick="switchNav('home')">
+        <img id="playerCover" class="player-cover" src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=120&q=80">
+        <div class="player-meta">
+          <div class="player-song-title" id="playerTitle">🎵 Ready to play</div>
+          <div class="player-song-artist" id="playerArtist">Select a song to start listening.</div>
+        </div>
+      </div>
+
+      <div class="player-center-controls">
+        <button class="p-ctrl-btn" onclick="prevSong()" title="Previous">⏮</button>
+        <button class="p-ctrl-btn p-ctrl-play" id="playPauseBtn" onclick="togglePlayPause()" title="Play/Pause">▶</button>
+        <button class="p-ctrl-btn" onclick="nextSong()" title="Next">⏭</button>
+      </div>
+
+      <div class="player-right-dock">
+        <span style="font-size:0.75rem; color:var(--bn-sub);">🔊</span>
+        <input type="range" class="vol-slider" min="0" max="1" step="0.05" value="1" oninput="changeVolume(this.value)">
+        <div class="stream-embed-box" id="streamFrameContainer">
+          <div style="font-size:0.6rem; color:#555; text-align:center; padding-top:16px;">Idle</div>
+        </div>
       </div>
     </div>
-    <div style="display:flex; align-items:center; gap:12px;">
-      <button class="ctrl-btn" onclick="togglePlayPause()" style="font-size:1.2rem;" id="miniPlayBtn">▶</button>
-      <div class="stream-frame-box" id="streamDock">
-        <div style="font-size:0.6rem; color:#666; text-align:center; padding-top:18px;">Idle</div>
-      </div>
+
+    <!-- PROGRESS BAR + TIMESTAMPS -->
+    <div class="player-progress-bar">
+      <span class="p-time" id="currentTimeLabel">0:00</span>
+      <input type="range" class="p-seek" id="progressSlider" min="0" max="100" value="0" oninput="seekAudio(this.value)">
+      <span class="p-time" id="totalDurationLabel">0:00</span>
     </div>
   </div>
 
-  <!-- BOTTOM NAVBAR -->
-  <div class="bottom-nav">
-    <button class="nav-item active" id="navHome" onclick="switchTab('home')">
-      <span class="icon">🏠</span>
+  <!-- BOTTOM NAVIGATION -->
+  <div class="mobile-navbar">
+    <button class="nav-tab active" id="navHome" onclick="switchNav('home')">
+      <span class="nav-icon">🏠</span>
       <span>Home</span>
     </button>
-    <button class="nav-item" id="navSearch" onclick="switchTab('search')">
-      <span class="icon">🔍</span>
+    <button class="nav-tab" id="navSearch" onclick="switchNav('search')">
+      <span class="nav-icon">🔍</span>
       <span>Search</span>
     </button>
-    <button class="nav-item" id="navLibrary" onclick="switchTab('library')">
-      <span class="icon">📚</span>
+    <button class="nav-tab" id="navLibrary" onclick="switchNav('library')">
+      <span class="nav-icon">❤️</span>
       <span>Library</span>
     </button>
-    <button class="nav-item" id="navAccount" onclick="switchTab('account')">
-      <span class="icon">👤</span>
-      <span>Account</span>
+    <button class="nav-tab" id="navProfile" onclick="switchNav('profile')">
+      <span class="nav-icon">👤</span>
+      <span>Profile</span>
     </button>
   </div>
 
-  <!-- PAYWALL MODAL -->
-  <div class="modal-overlay hidden" id="paywallModal">
-    <div class="modal-sheet">
-      <div style="font-size:2.4rem; margin-bottom:8px;">👑</div>
-      <h3 style="font-size:1.25rem; font-weight:800; color:var(--gold-vip);">Daily Play Limit Reached</h3>
-      <p style="font-size:0.8rem; color:var(--text-sub); margin-top:4px;">
-        Free listeners get 1 free stream every 24 hours. Upgrade to BeatNest VIP for non-stop unmetered playback.
+  <!-- PAYWALL / VIP MODAL (ONLY OPENS WHEN LIMIT REACHED OR UPGRADE TAPPED) -->
+  <div class="paywall-modal hidden" id="paywallModal">
+    <div class="paywall-sheet">
+      <div style="font-size:2.5rem; margin-bottom:8px;">👑</div>
+      <h3 style="font-size:1.25rem; font-weight:800; color:var(--bn-gold);">Daily Play Limit Reached</h3>
+      <p style="font-size:0.8rem; color:var(--bn-sub); margin-top:4px;">
+        Free plan includes 1 daily stream. Upgrade to VIP to enjoy unlimited ad-free playback.
       </p>
 
-      <div class="limit-progress-bar"><div class="limit-fill"></div></div>
-
-      <!-- PRICING -->
-      <div style="background:rgba(245, 158, 11, 0.08); border:1px dashed var(--gold-vip); border-radius:14px; padding:14px; margin-bottom:14px;">
+      <div style="background:rgba(245, 158, 11, 0.08); border:1px dashed var(--bn-gold); border-radius:14px; padding:14px; margin:16px 0;">
         <div style="font-size:1.3rem; font-weight:800;">₹29 <span style="font-size:0.75rem; color:#aaa; font-weight:400;">/ Month</span></div>
-        <a href="upi://pay?pa=support@beatnest.app&pn=BeatNest%20Music&am=29&cu=INR" class="btn-action btn-gold" style="display:block; text-decoration:none; margin-top:8px;">
-          ⚡ Upgrade via UPI (Instant)
+        <a href="upi://pay?pa=himanshu120mishra@gmail.com&pn=Master%20HIMANSHU%20MISHRA1&am=29&cu=INR" class="btn-action btn-gold" style="display:block; text-decoration:none; margin-top:8px;">
+          ⚡ Upgrade via UPI / PhonePe
         </a>
       </div>
 
-      <!-- SECURE PASSCODE -->
-      <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:14px; padding:14px;">
-        <p style="font-size:0.75rem; font-weight:600;">🔑 Access Passcode</p>
-        <input type="password" class="passcode-input" id="passcodeInput" placeholder="Enter VIP Key">
-        <button class="btn-action btn-primary" onclick="verifySecurePasscode()">Activate Membership</button>
-        <p id="passcodeError" style="color:#ef4444; font-size:0.7rem; margin-top:6px;"></p>
+      <div style="background:var(--bn-card); border:1px solid var(--bn-border); border-radius:14px; padding:14px;">
+        <p style="font-size:0.75rem; font-weight:600;">🔑 Enter VIP Passcode</p>
+        <input type="password" class="pass-input" id="vipPasscodeInput" placeholder="Enter Secret Key">
+        <button class="btn-action btn-primary" onclick="verifyEncryptedPasscode()">Activate Membership</button>
+        <p id="passcodeError" style="color:var(--bn-danger); font-size:0.7rem; margin-top:6px;"></p>
       </div>
 
-      <button onclick="closePaywallModal()" style="background:none; border:none; color:var(--text-sub); font-size:0.75rem; margin-top:14px; cursor:pointer;">Dismiss & Continue Browsing</button>
+      <button onclick="closeMembership()" style="background:none; border:none; color:var(--bn-sub); font-size:0.75rem; margin-top:14px; cursor:pointer;">Close</button>
     </div>
   </div>
 
-  <audio id="nativeAudio" class="hidden"></audio>
+  <audio id="nativePlayer" class="hidden"></audio>
 
   <script>
     const YOUTUBE_API_KEY = "AIzaSyB2hWJiAkjzL9pYcfIEDxpxKkbgYIe1Y04";
 
-    /* STATE MANAGEMENT */
+    /* STATE */
     let currentPlaylist = [];
     let currentIndex = 0;
     let isPlaying = false;
     let favorites = JSON.parse(localStorage.getItem('bn_favs') || '[]');
+    let recentTracks = JSON.parse(localStorage.getItem('bn_recents') || '[]');
     let offlineTracks = [];
     let playedCount = parseInt(localStorage.getItem('bn_played_count') || '0', 10);
     let isVip = localStorage.getItem('bn_vip_active') === 'true';
 
-    // Obfuscated cryptographic hash of valid passcode (Security hardened)
-    const SECURE_VIP_HASH = "80f68d6f376ee525d88698f121e7dafa531b2ebac6cae135f60f6ee4f7c9e034";
+    // Obfuscated SHA-256 hash of: Himanshumishra@@8090@567
+    const SECURE_HASH = "80f68d6f376ee525d88698f121e7dafa531b2ebac6cae135f60f6ee4f7c9e034";
 
-    // DEFAULT TRENDING LIST (FEED)
     const DEFAULT_FEED = [
       { id: "kJQP7kiw5Fk", title: "Despacito (Global Pop)", channel: "Luis Fonsi", thumb: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=200&q=80" },
       { id: "JGwWNGJdvx8", title: "Shape of You", channel: "Ed Sheeran", thumb: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=200&q=80" },
       { id: "OPf0YbXqDm0", title: "Uptown Funk Beats", channel: "Mark Ronson", thumb: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=200&q=80" }
     ];
 
-    function initApp() {
-      renderSongs(DEFAULT_FEED, document.getElementById('homeFeedList'));
-      syncVipUI();
+    function init() {
+      renderSongList(DEFAULT_FEED, document.getElementById('homeFeedList'));
+      syncVIPBadge();
       updateStats();
+      setupAudioListeners();
     }
 
-    function syncVipUI() {
-      const badge = document.getElementById('vipBadge');
-      const tierLabel = document.getElementById('statTier');
-      const upgradeBtn = document.getElementById('upgradeBannerBtn');
-
+    function syncVIPBadge() {
+      const badge = document.getElementById('headerPlanBadge');
+      const profileTier = document.getElementById('profileTierText');
       if (isVip) {
         badge.innerText = "👑 VIP MEMBER";
-        badge.className = "badge-tier badge-vip";
-        tierLabel.innerText = "VIP";
-        tierLabel.style.color = "var(--gold-vip)";
-        upgradeBtn.style.display = "none";
+        badge.className = "plan-badge badge-vip";
+        profileTier.innerText = "Plan: VIP Member (Unlimited)";
+        profileTier.style.color = "var(--bn-gold)";
       } else {
-        const remaining = Math.max(0, 1 - playedCount);
-        badge.innerText = `FREE PLAN (${remaining}/1 LEFT)`;
-        badge.className = "badge-tier badge-normal";
-        tierLabel.innerText = "FREE";
-        tierLabel.style.color = "var(--text-sub)";
-        upgradeBtn.style.display = "block";
+        badge.innerText = "👑 Upgrade to VIP";
+        badge.className = "plan-badge badge-free";
+        profileTier.innerText = "Plan: Free (1 Daily Stream)";
+        profileTier.style.color = "var(--bn-sub)";
       }
     }
 
     function playTrack(track, index = 0, sourceList = null) {
       if (!isVip && playedCount >= 1 && !track.isOffline) {
-        openPaywallModal();
+        openMembership();
         return;
       }
 
@@ -704,23 +651,22 @@
         currentIndex = index;
       }
 
-      // Update Hero Player
-      document.getElementById('heroTitle').innerText = track.title;
-      document.getElementById('heroArtist').innerText = track.channel || "Local Device Audio";
-      document.getElementById('heroArt').src = track.thumb || "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=400&q=80";
-      document.getElementById('heroArt').classList.add('playing');
+      // Update Player Dock
+      document.getElementById('playerTitle').innerText = track.title;
+      document.getElementById('playerArtist').innerText = track.channel || "Local Device Audio";
+      document.getElementById('playerCover').src = track.thumb || "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=120&q=80";
 
-      // Update Mini Player
-      document.getElementById('miniTitle').innerText = track.title;
-      document.getElementById('miniSub').innerText = track.channel || "Audio Playing";
-      document.getElementById('miniThumb').src = track.thumb || "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=100&q=80";
+      // Update Home Hero Title
+      document.getElementById('homeWelcomeTitle').innerText = track.title;
+      document.getElementById('homeWelcomeSub').innerText = track.channel || "Now Playing";
+      document.getElementById('heroHomeCover').src = track.thumb || "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=250&q=80";
 
-      const nativeAudio = document.getElementById('nativeAudio');
-      const streamDock = document.getElementById('streamDock');
+      const nativeAudio = document.getElementById('nativePlayer');
+      const streamDock = document.getElementById('streamFrameContainer');
       nativeAudio.pause();
 
       if (track.isOffline) {
-        streamDock.innerHTML = '<div style="color:var(--primary-color); font-size:0.65rem; text-align:center; padding-top:18px;">Offline File</div>';
+        streamDock.innerHTML = '<div style="color:var(--bn-primary); font-size:0.6rem; text-align:center; padding-top:16px;">Offline</div>';
         nativeAudio.src = track.audioUrl;
         nativeAudio.play();
       } else {
@@ -729,31 +675,26 @@
         localStorage.setItem('bn_played_count', playedCount.toString());
       }
 
+      // Add to recents
+      recentTracks = [track, ...recentTracks.filter(r => r.id !== track.id)].slice(0, 5);
+      localStorage.setItem('bn_recents', JSON.stringify(recentTracks));
+
       isPlaying = true;
-      updatePlayIcons(true);
-      syncVipUI();
+      document.getElementById('playPauseBtn').innerText = "⏸";
+      syncVIPBadge();
       updateStats();
     }
 
     function togglePlayPause() {
-      const nativeAudio = document.getElementById('nativeAudio');
-      const heroArt = document.getElementById('heroArt');
-
+      const nativeAudio = document.getElementById('nativePlayer');
       if (isPlaying) {
         nativeAudio.pause();
-        heroArt.classList.remove('playing');
         isPlaying = false;
       } else {
         nativeAudio.play();
-        heroArt.classList.add('playing');
         isPlaying = true;
       }
-      updatePlayIcons(isPlaying);
-    }
-
-    function updatePlayIcons(playing) {
-      document.getElementById('heroPlayBtn').innerText = playing ? "⏸" : "▶";
-      document.getElementById('miniPlayBtn').innerText = playing ? "⏸" : "▶";
+      document.getElementById('playPauseBtn').innerText = isPlaying ? "⏸" : "▶";
     }
 
     function nextSong() {
@@ -768,32 +709,51 @@
       playTrack(currentPlaylist[currentIndex], currentIndex);
     }
 
-    function changeVolume(val) {
-      document.getElementById('nativeAudio').volume = val;
+    function changeVolume(v) {
+      document.getElementById('nativePlayer').volume = v;
     }
 
-    function manualSeek(val) {
-      const audio = document.getElementById('nativeAudio');
+    function seekAudio(val) {
+      const audio = document.getElementById('nativePlayer');
       if (audio.duration) {
         audio.currentTime = (val / 100) * audio.duration;
       }
     }
 
-    /* SEARCH ENGINE */
+    function setupAudioListeners() {
+      const audio = document.getElementById('nativePlayer');
+      audio.ontimeupdate = () => {
+        if (audio.duration) {
+          const pct = (audio.currentTime / audio.duration) * 100;
+          document.getElementById('progressSlider').value = pct;
+          document.getElementById('currentTimeLabel').innerText = formatSeconds(audio.currentTime);
+          document.getElementById('totalDurationLabel').innerText = formatSeconds(audio.duration);
+        }
+      };
+      audio.onended = () => nextSong();
+    }
+
+    function formatSeconds(sec) {
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    /* SEARCH FUNCTION */
     function executeSearch() {
       const q = document.getElementById('searchInput').value.trim();
       if (!q) return;
 
-      const container = document.getElementById('searchContainer');
-      container.innerHTML = '<p style="color:var(--text-sub); text-align:center; padding:30px;">Searching music catalogue...</p>';
+      const container = document.getElementById('searchResultsList');
+      container.innerHTML = '<p style="color:var(--bn-sub); text-align:center; padding:30px;">Searching catalogue...</p>';
 
-      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${encodeURIComponent(q + " song")}&type=video&key=${YOUTUBE_API_KEY}`;
+      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${encodeURIComponent(q + " full song")}&type=video&key=${YOUTUBE_API_KEY}`;
 
       fetch(url)
         .then(r => r.json())
         .then(data => {
           if (data.error) {
-            container.innerHTML = `<p style="color:#ef4444; text-align:center; padding:20px;">API Error: ${data.error.message}</p>`;
+            container.innerHTML = `<p style="color:var(--bn-danger); text-align:center; padding:20px;">API Error: ${data.error.message}</p>`;
             return;
           }
           currentPlaylist = (data.items || []).map(i => ({
@@ -808,48 +768,52 @@
             container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🚫</div><div class="empty-state-title">No songs found</div></div>';
             return;
           }
-          renderSongs(currentPlaylist, container);
+          renderSongList(currentPlaylist, container);
         })
         .catch(() => {
-          container.innerHTML = '<p style="color:#ef4444; text-align:center; padding:20px;">Network failed to fetch songs.</p>';
+          container.innerHTML = '<p style="color:var(--bn-danger); text-align:center; padding:20px;">Network connection failed.</p>';
         });
     }
 
-    function renderSongs(list, target) {
+    document.getElementById('searchInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') executeSearch();
+    });
+
+    function renderSongList(list, target) {
       target.innerHTML = '';
-      list.forEach((t, index) => {
+      list.forEach((t, idx) => {
         const isFav = favorites.some(f => f.id === t.id);
         const card = document.createElement('div');
-        card.className = 'song-card';
+        card.className = 'track-card';
         card.innerHTML = `
-          <img class="song-thumb" src="${t.thumb || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=100&q=80'}">
-          <div class="song-info">
-            <div class="song-name">${t.title}</div>
-            <div class="song-sub">${t.channel || 'Artist'}</div>
+          <img class="track-thumb" src="${t.thumb || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=120&q=80'}">
+          <div class="track-details">
+            <div class="track-name">${t.title}</div>
+            <div class="track-artist">${t.channel || 'Music Artist'}</div>
           </div>
-          <div class="song-actions">
-            ${!t.isOffline ? `<button class="action-icon dl-btn" title="Download">⬇️</button>` : ''}
-            ${!t.isOffline ? `<button class="action-icon fav-btn ${isFav ? 'fav-active' : ''}" title="Favorite">❤️</button>` : ''}
+          <div class="track-actions">
+            ${!t.isOffline ? `<button class="btn-icon dl-btn" title="Download">⬇️</button>` : ''}
+            ${!t.isOffline ? `<button class="btn-icon fav-btn ${isFav ? 'fav-heart-active' : ''}" title="Favorite">❤️</button>` : ''}
           </div>
         `;
 
-        card.querySelector('.song-info').onclick = () => playTrack(t, index, list);
+        card.querySelector('.track-details').onclick = () => playTrack(t, idx, list);
 
         if (!t.isOffline) {
           card.querySelector('.dl-btn').onclick = (e) => {
             e.stopPropagation();
-            if (!isVip && playedCount >= 1) { openPaywallModal(); return; }
+            if (!isVip && playedCount >= 1) { openMembership(); return; }
             window.open('https://ytmp3.nu/watch?v=' + t.id, '_blank');
           };
 
           card.querySelector('.fav-btn').onclick = (e) => {
             e.stopPropagation();
-            const idx = favorites.findIndex(f => f.id === t.id);
-            if (idx > -1) favorites.splice(idx, 1);
+            const fIndex = favorites.findIndex(f => f.id === t.id);
+            if (fIndex > -1) favorites.splice(fIndex, 1);
             else favorites.push(t);
             localStorage.setItem('bn_favs', JSON.stringify(favorites));
             updateStats();
-            renderSongs(list, target);
+            renderSongList(list, target);
           };
         }
         target.appendChild(card);
@@ -857,30 +821,31 @@
     }
 
     /* OFFLINE AUDIO IMPORT */
-    function importLocalAudio(e) {
+    function importLocalSongs(e) {
       const files = e.target.files;
       if (files && files.length > 0) {
         for (let i = 0; i < files.length; i++) {
           const f = files[i];
           offlineTracks.push({
-            id: 'local_' + Date.now() + '_' + i,
+            id: 'offline_' + Date.now() + '_' + i,
             title: f.name.replace(/\.[^/.]+$/, ""),
-            channel: "Device Storage",
+            channel: "Device Storage Audio",
             audioUrl: URL.createObjectURL(f),
             thumb: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=200&q=80",
             isOffline: true
           });
         }
         document.getElementById('offlineCount').innerText = offlineTracks.length;
-        renderSongs(offlineTracks, document.getElementById('offlineContainer'));
+        document.getElementById('statOffline').innerText = offlineTracks.length;
+        renderSongList(offlineTracks, document.getElementById('offlineSongsList'));
       }
     }
 
-    /* PAYWALL & PASSCODE (HASH ENCRYPTED) */
-    function openPaywallModal() {
+    /* VIP / MEMBERSHIP */
+    function openMembership() {
       document.getElementById('paywallModal').classList.remove('hidden');
     }
-    function closePaywallModal() {
+    function closeMembership() {
       document.getElementById('paywallModal').classList.add('hidden');
     }
 
@@ -889,33 +854,33 @@
       return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
-    async function verifySecurePasscode() {
-      const input = document.getElementById('passcodeInput').value.trim();
-      const hashed = await hashInput(input);
+    async function verifyEncryptedPasscode() {
+      const val = document.getElementById('vipPasscodeInput').value.trim();
+      const hashed = await hashInput(val);
 
-      if (hashed === SECURE_VIP_HASH) {
+      if (hashed === SECURE_HASH) {
         localStorage.setItem('bn_vip_active', 'true');
         isVip = true;
-        closePaywallModal();
-        syncVipUI();
-        alert('🎉 Welcome to VIP! Unlimited playback permanently unlocked.');
+        closeMembership();
+        syncVIPBadge();
+        alert('🎉 BeatNest VIP Unlocked! Unlimited non-stop playback active.');
       } else {
-        document.getElementById('passcodeError').innerText = "Invalid access key. Please verify or upgrade.";
+        document.getElementById('passcodeError').innerText = "Galat passcode! Please re-check.";
       }
-    }
-
-    function changeTheme(theme) {
-      document.body.className = '';
-      if (theme !== 'emerald') document.body.classList.add('theme-' + theme);
     }
 
     function updateStats() {
       document.getElementById('statFav').innerText = favorites.length;
       document.getElementById('statPlayed').innerText = playedCount;
+      document.getElementById('statOffline').innerText = offlineTracks.length;
+
+      if (recentTracks.length > 0) {
+        renderSongList(recentTracks, document.getElementById('recentlyPlayedList'));
+      }
     }
 
-    function switchTab(tab) {
-      const tabs = ['home', 'search', 'library', 'account'];
+    function switchNav(tab) {
+      const tabs = ['home', 'search', 'library', 'profile'];
       tabs.forEach(t => {
         document.getElementById('nav' + t.charAt(0).toUpperCase() + t.slice(1)).classList.remove('active');
         document.getElementById('view' + t.charAt(0).toUpperCase() + t.slice(1)).classList.add('hidden');
@@ -925,12 +890,12 @@
       document.getElementById('view' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.remove('hidden');
 
       if (tab === 'library') {
-        if (favorites.length > 0) renderSongs(favorites, document.getElementById('favContainer'));
-        if (offlineTracks.length > 0) renderSongs(offlineTracks, document.getElementById('offlineContainer'));
+        if (favorites.length > 0) renderSongList(favorites, document.getElementById('favoriteSongsList'));
+        if (offlineTracks.length > 0) renderSongList(offlineTracks, document.getElementById('offlineSongsList'));
       }
     }
 
-    initApp();
+    init();
   </script>
 </body>
 </html>
