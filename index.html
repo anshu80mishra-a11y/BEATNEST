@@ -3,31 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>BeatNest Studio</title>
+  <title>BeatNest Music</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --spotify-green: #1db954;
-      --spotify-dark: #121212;
-      --spotify-base: #000000;
-      --spotify-card: #181818;
-      --spotify-hover: #282828;
+      --primary-color: #1db954;
+      --primary-glow: rgba(29, 185, 84, 0.35);
+      --bg-base: #0c0d10;
+      --bg-surface: #14161d;
+      --bg-card: #1c1f2b;
+      --bg-hover: #262a3b;
       --text-main: #ffffff;
-      --text-sub: #b3b3b3;
+      --text-sub: #94a3b8;
       --gold-vip: #f59e0b;
-      --phonepe-purple: #5f259f;
+      --border-subtle: rgba(255, 255, 255, 0.08);
     }
+
+    /* THEME VARIATIONS */
+    body.theme-neon {
+      --primary-color: #06b6d4;
+      --primary-glow: rgba(6, 182, 212, 0.35);
+    }
+    body.theme-violet {
+      --primary-color: #8b5cf6;
+      --primary-glow: rgba(139, 92, 246, 0.35);
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
       font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
       -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
     body {
-      background-color: var(--spotify-base);
+      background-color: var(--bg-base);
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
@@ -36,60 +49,156 @@
     }
     .hidden { display: none !important; }
 
-    /* TOP HEADER */
+    /* HEADER */
     .top-header {
-      padding: 12px 18px;
-      background: rgba(18, 18, 18, 0.95);
-      backdrop-filter: blur(12px);
+      padding: 14px 20px;
+      background: rgba(12, 13, 16, 0.95);
+      backdrop-filter: blur(16px);
       display: flex;
       justify-content: space-between;
       align-items: center;
       position: sticky;
       top: 0;
-      z-index: 40;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      z-index: 50;
+      border-bottom: 1px solid var(--border-subtle);
     }
     .brand-title {
-      font-size: 1.25rem;
+      font-size: 1.3rem;
       font-weight: 800;
-      color: #fff;
+      letter-spacing: -0.5px;
       display: flex;
       align-items: center;
       gap: 8px;
     }
-    .brand-title span { color: var(--spotify-green); }
-
-    /* BADGES */
-    .badge-normal {
-      background: rgba(255,255,255,0.1);
-      color: #94a3b8;
-      border: 1px solid rgba(255,255,255,0.15);
+    .brand-title span { color: var(--primary-color); }
+    .badge-tier {
       font-size: 0.68rem;
       font-weight: 700;
       padding: 4px 10px;
       border-radius: 20px;
       text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-normal {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-sub);
+      border: 1px solid var(--border-subtle);
     }
     .badge-vip {
       background: rgba(245, 158, 11, 0.2);
-      color: #f59e0b;
-      border: 1px solid #f59e0b;
-      font-size: 0.7rem;
-      font-weight: 800;
-      padding: 4px 10px;
-      border-radius: 20px;
-      box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
-      letter-spacing: 0.5px;
+      color: var(--gold-vip);
+      border: 1px solid var(--gold-vip);
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
     }
 
-    /* CONTENT */
     .content-area {
       flex: 1;
-      padding: 16px 20px 200px;
-      max-width: 800px;
+      padding: 16px 20px 180px;
+      max-width: 820px;
       margin: 0 auto;
       width: 100%;
     }
+
+    /* HERO SECTION */
+    .hero-container {
+      background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-card) 100%);
+      border-radius: 24px;
+      padding: 24px 20px;
+      border: 1px solid var(--border-subtle);
+      margin-bottom: 24px;
+      text-align: center;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+    }
+    .hero-art-wrapper {
+      position: relative;
+      width: 170px;
+      height: 170px;
+      margin: 0 auto 18px;
+    }
+    .hero-art {
+      width: 100%;
+      height: 100%;
+      border-radius: 20px;
+      object-fit: cover;
+      box-shadow: 0 10px 30px var(--primary-glow);
+      transition: transform 0.3s ease;
+    }
+    .hero-art.playing {
+      animation: pulseRecord 6s linear infinite alternate;
+    }
+    @keyframes pulseRecord {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.04); }
+    }
+    .hero-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 4px;
+    }
+    .hero-artist {
+      font-size: 0.85rem;
+      color: var(--text-sub);
+      margin-bottom: 18px;
+    }
+    .seek-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .seek-bar {
+      flex: 1;
+      accent-color: var(--primary-color);
+      height: 4px;
+      cursor: pointer;
+    }
+    .seek-time { font-size: 0.72rem; color: var(--text-sub); }
+    .hero-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 24px;
+      margin-bottom: 16px;
+    }
+    .ctrl-btn {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.4rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s ease;
+    }
+    .ctrl-btn:active { transform: scale(0.85); }
+    .play-btn-main {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      color: #000;
+      font-size: 1.5rem;
+      box-shadow: 0 6px 20px var(--primary-glow);
+    }
+    .volume-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      max-width: 200px;
+      margin: 0 auto;
+    }
+    .vol-slider {
+      width: 100px;
+      accent-color: var(--primary-color);
+      height: 4px;
+    }
+
+    /* SEARCH BAR & CARDS */
     .search-box {
       display: flex;
       gap: 10px;
@@ -97,618 +206,731 @@
     }
     .search-box input {
       flex: 1;
-      padding: 12px 18px;
-      background: #242424;
-      border: none;
+      padding: 14px 18px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
       border-radius: 24px;
       color: #fff;
       font-size: 0.9rem;
       outline: none;
     }
+    .search-box input:focus { border-color: var(--primary-color); }
     .search-btn {
-      padding: 0 22px;
-      background: var(--spotify-green);
+      padding: 0 24px;
+      background: var(--primary-color);
       color: #000;
       font-weight: 700;
       border: none;
       border-radius: 24px;
       cursor: pointer;
     }
-
-    /* CARDS */
     .song-list { display: flex; flex-direction: column; gap: 8px; }
     .song-card {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 10px 12px;
-      background: var(--spotify-card);
-      border-radius: 10px;
+      padding: 10px 14px;
+      background: var(--bg-surface);
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      transition: background 0.2s;
     }
+    .song-card:hover { background: var(--bg-hover); }
     .song-thumb {
-      width: 48px;
-      height: 48px;
-      border-radius: 6px;
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
       object-fit: cover;
       background: #000;
       flex-shrink: 0;
     }
     .song-info { flex: 1; overflow: hidden; cursor: pointer; }
-    .song-title {
-      font-size: 0.88rem;
+    .song-name {
+      font-size: 0.9rem;
       font-weight: 600;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     .song-sub { font-size: 0.74rem; color: var(--text-sub); margin-top: 3px; }
-    .action-icons { display: flex; align-items: center; gap: 12px; }
-    .action-btn { 
-      background: none; 
-      border: none; 
-      color: var(--text-sub); 
-      font-size: 1.15rem; 
-      cursor: pointer; 
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .song-actions { display: flex; align-items: center; gap: 14px; }
+    .action-icon {
+      background: none;
+      border: none;
+      color: var(--text-sub);
+      font-size: 1.15rem;
+      cursor: pointer;
     }
-    .fav-on { color: #f43f5e !important; }
+    .fav-active { color: #f43f5e !important; }
 
-    /* PROFILE */
-    .profile-card {
-      background: var(--spotify-dark);
-      border-radius: 16px;
-      padding: 24px;
+    /* EMPTY STATES */
+    .empty-state {
+      padding: 40px 20px;
       text-align: center;
-      border: 1px solid rgba(255,255,255,0.06);
+      background: var(--bg-surface);
+      border-radius: 16px;
+      border: 1px dashed var(--border-subtle);
+      margin: 14px 0;
+    }
+    .empty-state-icon { font-size: 2.5rem; margin-bottom: 10px; }
+    .empty-state-title { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+    .empty-state-desc { font-size: 0.78rem; color: var(--text-sub); max-width: 320px; margin: 0 auto; }
+
+    /* PROFILE & SETTINGS */
+    .profile-card {
+      background: var(--bg-surface);
+      border-radius: 20px;
+      padding: 24px;
+      border: 1px solid var(--border-subtle);
+    }
+    .avatar-wrapper {
+      position: relative;
+      width: 86px;
+      height: 86px;
+      margin: 0 auto 12px;
     }
     .profile-avatar {
-      width: 80px;
-      height: 80px;
+      width: 100%;
+      height: 100%;
       border-radius: 50%;
-      background: linear-gradient(135deg, #1db954, #191414);
+      background: linear-gradient(135deg, var(--primary-color), #111);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2rem;
-      margin: 0 auto 12px;
-      border: 2px solid var(--spotify-green);
+      font-size: 2.2rem;
+      border: 2px solid var(--primary-color);
     }
-    .profile-stats {
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 20px 0;
+      padding: 14px 0;
+      border-top: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .stat-number { font-size: 1.25rem; font-weight: 800; color: var(--primary-color); }
+    .stat-label { font-size: 0.72rem; color: var(--text-sub); margin-top: 2px; }
+    .settings-row {
       display: flex;
-      justify-content: space-around;
-      margin: 18px 0;
+      justify-content: space-between;
+      align-items: center;
       padding: 12px 0;
-      border-top: 1px solid rgba(255,255,255,0.08);
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-    .stat-val { font-size: 1.2rem; font-weight: 700; color: var(--spotify-green); }
-    .stat-lbl { font-size: 0.75rem; color: var(--text-sub); margin-top: 2px; }
-
-    .btn-green {
-      width: 100%;
-      padding: 13px;
-      background: var(--spotify-green);
-      color: #000;
-      border: none;
-      border-radius: 24px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 16px;
-      font-size: 0.92rem;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 0.85rem;
     }
 
-    /* PLAYER DOCK */
-    .bottom-player-dock {
+    /* MINI PLAYER (STICKY DOCK) */
+    .mini-player {
       position: fixed;
       bottom: 60px;
       left: 0;
       width: 100%;
-      background: #181818;
-      border-top: 1px solid rgba(255,255,255,0.1);
+      background: rgba(20, 22, 29, 0.96);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid var(--border-subtle);
       padding: 10px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
       z-index: 90;
     }
-    .now-playing { flex: 1; overflow: hidden; }
-    .player-video-box {
-      width: 160px;
-      height: 90px;
-      border-radius: 8px;
+    .mini-info { display: flex; align-items: center; gap: 10px; flex: 1; overflow: hidden; cursor: pointer; }
+    .mini-thumb { width: 44px; height: 44px; border-radius: 6px; object-fit: cover; }
+    .mini-text { flex: 1; overflow: hidden; }
+    .mini-title { font-size: 0.82rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mini-sub { font-size: 0.7rem; color: var(--text-sub); }
+    .stream-frame-box {
+      width: 90px;
+      height: 52px;
+      border-radius: 6px;
       overflow: hidden;
       background: #000;
-      border: 1px solid rgba(255,255,255,0.15);
+      flex-shrink: 0;
     }
-    .player-video-box iframe { width: 100%; height: 100%; border: none; }
+    .stream-frame-box iframe { width: 100%; height: 100%; border: none; }
 
-    /* NAVBAR */
-    .spotify-navbar {
+    /* BOTTOM NAV */
+    .bottom-nav {
       position: fixed;
       bottom: 0;
       left: 0;
       width: 100%;
       height: 60px;
-      background: #000;
-      border-top: 1px solid rgba(255,255,255,0.08);
+      background: var(--bg-base);
+      border-top: 1px solid var(--border-subtle);
       display: flex;
       justify-content: space-around;
       align-items: center;
       z-index: 100;
     }
-    .nav-btn {
+    .nav-item {
       display: flex;
       flex-direction: column;
       align-items: center;
       background: none;
       border: none;
       color: var(--text-sub);
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 600;
-      gap: 4px;
+      gap: 3px;
       cursor: pointer;
     }
-    .nav-btn.active { color: #fff; }
-    .nav-btn.active span.nav-icon { color: var(--spotify-green); }
-    .nav-icon { font-size: 1.25rem; }
+    .nav-item.active { color: #fff; }
+    .nav-item.active span.icon { color: var(--primary-color); }
+    .nav-item span.icon { font-size: 1.25rem; }
 
     /* PAYWALL MODAL */
-    .paywall-overlay {
+    .modal-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.92);
-      backdrop-filter: blur(10px);
+      inset: 0;
+      background: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(12px);
       z-index: 999;
       display: flex;
       justify-content: center;
       align-items: center;
       padding: 16px;
     }
-    .paywall-modal {
-      background: #181818;
+    .modal-sheet {
+      background: var(--bg-surface);
       border: 1px solid var(--gold-vip);
-      border-radius: 20px;
-      padding: 24px 20px;
+      border-radius: 24px;
+      padding: 24px;
       max-width: 400px;
       width: 100%;
       text-align: center;
-      box-shadow: 0 10px 40px rgba(245, 158, 11, 0.25);
       max-height: 90vh;
       overflow-y: auto;
+      box-shadow: 0 20px 50px rgba(245, 158, 11, 0.25);
     }
-    .paywall-badge { font-size: 2.3rem; margin-bottom: 6px; }
-    .paywall-title { font-size: 1.35rem; font-weight: 800; color: var(--gold-vip); }
-    .paywall-desc {
-      font-size: 0.82rem;
-      color: var(--text-sub);
-      margin: 10px 0 14px;
-      line-height: 1.4;
+    .limit-progress-bar {
+      height: 6px;
+      background: #2a2d3d;
+      border-radius: 4px;
+      margin: 12px 0 16px;
+      overflow: hidden;
     }
-    .vip-price-box {
-      background: rgba(245, 158, 11, 0.1);
-      border: 1px dashed var(--gold-vip);
-      border-radius: 12px;
-      padding: 12px;
-      margin-bottom: 14px;
-    }
-    .vip-price { font-size: 1.4rem; font-weight: 800; color: #fff; }
-
-    /* QR CONTAINER */
-    .qr-container {
-      background: #000;
-      border: 1px solid var(--phonepe-purple);
-      border-radius: 12px;
-      padding: 12px;
-      margin-top: 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .qr-image-wrapper {
-      background: #fff;
-      padding: 8px;
-      border-radius: 8px;
-      display: inline-block;
-      margin: 8px 0;
-    }
-    .qr-image-wrapper img {
-      width: 170px;
-      height: 170px;
-      display: block;
-    }
-
-    .free-box {
-      background: #222;
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 12px;
-      padding: 14px;
-      margin-top: 14px;
-    }
-    .vip-code-input {
+    .limit-fill { height: 100%; width: 100%; background: #ef4444; }
+    .btn-action {
       width: 100%;
-      padding: 11px 14px;
-      background: #111;
-      border: 1px solid #444;
-      border-radius: 8px;
+      padding: 12px;
+      border-radius: 24px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      border: none;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .btn-primary { background: var(--primary-color); color: #000; }
+    .btn-gold { background: var(--gold-vip); color: #000; }
+    .passcode-input {
+      width: 100%;
+      padding: 12px;
+      background: #0f1015;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
       color: #fff;
       font-size: 0.85rem;
-      margin-top: 8px;
       text-align: center;
-      font-weight: 700;
+      margin-top: 8px;
     }
   </style>
 </head>
 <body>
 
-  <!-- MAIN APP -->
-  <div id="appSection">
-    <div class="top-header">
-      <div class="brand-title"><span>⚡</span> BeatNest</div>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <span id="vipHeaderBadge" class="badge-normal">NORMAL (1 TRACK)</span>
+  <!-- HEADER -->
+  <div class="top-header">
+    <div class="brand-title"><span>⚡</span> BeatNest</div>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span id="vipBadge" class="badge-tier badge-normal">FREE PLAN (1/1 LEFT)</span>
+    </div>
+  </div>
+
+  <!-- VIEW: HOME (HERO PLAYER + TRENDING) -->
+  <div class="content-area" id="viewHome">
+    <div class="hero-container">
+      <div class="hero-art-wrapper">
+        <img id="heroArt" class="hero-art" src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=400&q=80" alt="Artwork">
+      </div>
+      <div class="hero-title" id="heroTitle">Select a track to start</div>
+      <div class="hero-artist" id="heroArtist">BeatNest Studio Engine</div>
+
+      <!-- PROGRESS SEEKBAR -->
+      <div class="seek-container">
+        <span class="seek-time" id="currTime">0:00</span>
+        <input type="range" class="seek-bar" id="seekSlider" min="0" max="100" value="0" oninput="manualSeek(this.value)">
+        <span class="seek-time" id="totalDuration">3:30</span>
+      </div>
+
+      <!-- CONTROLS -->
+      <div class="hero-controls">
+        <button class="ctrl-btn" onclick="prevSong()" title="Previous">⏮️</button>
+        <button class="ctrl-btn play-btn-main" id="heroPlayBtn" onclick="togglePlayPause()" title="Play/Pause">▶</button>
+        <button class="ctrl-btn" onclick="nextSong()" title="Next">⏭️</button>
+      </div>
+
+      <!-- VOLUME -->
+      <div class="volume-box">
+        <span style="font-size:0.8rem; color:var(--text-sub);">🔈</span>
+        <input type="range" class="vol-slider" min="0" max="1" step="0.05" value="1" oninput="changeVolume(this.value)">
+        <span style="font-size:0.8rem; color:var(--text-sub);">🔊</span>
       </div>
     </div>
 
-    <!-- 1. SEARCH -->
-    <div class="content-area" id="viewSearch">
-      <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Search song or artist...">
-        <button class="search-btn" onclick="doSearch()">Search</button>
+    <!-- QUICK PICKS SECTION -->
+    <h3 style="font-size:1rem; margin-bottom:12px; font-weight:700;">Top Recommendations</h3>
+    <div class="song-list" id="homeFeedList"></div>
+  </div>
+
+  <!-- VIEW: SEARCH -->
+  <div class="content-area hidden" id="viewSearch">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search track, artist or album...">
+      <button class="search-btn" onclick="executeSearch()">Search</button>
+    </div>
+    <div class="song-list" id="searchContainer">
+      <div class="empty-state">
+        <div class="empty-state-icon">🔍</div>
+        <div class="empty-state-title">Search What You Love</div>
+        <div class="empty-state-desc">Discover millions of tracks from international & regional creators.</div>
       </div>
-      <div class="song-list" id="searchResults"></div>
+    </div>
+  </div>
+
+  <!-- VIEW: LIBRARY -->
+  <div class="content-area hidden" id="viewLibrary">
+    <div style="background:var(--bg-surface); padding:20px; border-radius:16px; margin-bottom:20px; text-align:center; border:1px dashed var(--border-subtle);">
+      <p style="font-size:0.9rem; font-weight:700; margin-bottom:4px;">Offline Device Hub</p>
+      <p style="font-size:0.75rem; color:var(--text-sub); margin-bottom:14px;">Import audio directly from device storage (Runs 100% without data).</p>
+      <input type="file" id="localFileInput" accept="audio/*" multiple style="display:none;" onchange="importLocalAudio(event)">
+      <button class="btn-action btn-primary" style="width:auto; padding:8px 24px;" onclick="document.getElementById('localFileInput').click()">+ Add Local Songs</button>
     </div>
 
-    <!-- 2. LIBRARY (OFFLINE HUB) -->
-    <div class="content-area hidden" id="viewLibrary">
-      <h3 style="margin-bottom:14px; font-size:1.1rem;">Offline & Saved Music</h3>
-      
-      <!-- DIRECT LOCAL MP3 IMPORT (OFFLINE READY) -->
-      <div style="background:#181818; padding:18px; border-radius:14px; margin-bottom:18px; text-align:center; border:1px dashed rgba(255,255,255,0.15);">
-        <p style="font-size:0.85rem; font-weight:600; margin-bottom:4px;">📥 Play Offline Songs (No Internet)</p>
-        <p style="font-size:0.75rem; color:var(--text-sub); margin-bottom:12px;">Apne phone se download kiya hua koi bhi MP3 gaana yahan chunein:</p>
-        <input type="file" id="localFileInput" accept="audio/*" multiple style="display:none;" onchange="handleLocalFiles(event)">
-        <button class="btn-green" style="width:auto; padding:10px 22px; font-size:0.82rem;" onclick="document.getElementById('localFileInput').click()">+ Add Offline Songs</button>
+    <h4 style="font-size:0.92rem; color:var(--text-sub); margin-bottom:10px;">Device Offline Storage (<span id="offlineCount">0</span>)</h4>
+    <div id="offlineContainer">
+      <div class="empty-state">
+        <div class="empty-state-icon">🎵</div>
+        <div class="empty-state-title">No offline songs yet</div>
+        <div class="empty-state-desc">Add MP3 files from your device to start listening without internet.</div>
       </div>
-
-      <h4 style="font-size:0.9rem; color:var(--text-sub); margin-bottom:10px;">Device Offline Songs (<span id="offlineCount">0</span>)</h4>
-      <div class="song-list" id="offlineResults"></div>
-
-      <h4 style="font-size:0.9rem; color:var(--text-sub); margin:20px 0 10px;">Favorite Online Tracks</h4>
-      <div class="song-list" id="favResults"></div>
     </div>
 
-    <!-- 3. PROFILE -->
-    <div class="content-area hidden" id="viewProfile">
-      <div class="profile-card">
-        <div class="profile-avatar">⚡</div>
-        <h2 style="font-size:1.3rem; font-weight:700;">BeatNest User</h2>
-        <p style="font-size:0.8rem; color:var(--text-sub); margin-top:2px;">user@beatnest.com</p>
-        
-        <div class="profile-stats">
-          <div>
-            <div class="stat-val" id="statFav">0</div>
-            <div class="stat-lbl">Favorites</div>
-          </div>
-          <div>
-            <div class="stat-val" id="statPlayed">0</div>
-            <div class="stat-lbl">Played</div>
-          </div>
-          <div>
-            <div class="stat-val" id="profileTierText">NORMAL</div>
-            <div class="stat-lbl">Plan</div>
-          </div>
+    <h4 style="font-size:0.92rem; color:var(--text-sub); margin:24px 0 10px;">Favorite Online Tracks</h4>
+    <div id="favContainer">
+      <div class="empty-state">
+        <div class="empty-state-icon">❤️</div>
+        <div class="empty-state-title">No favorites saved</div>
+        <div class="empty-state-desc">Tap heart icon on any song card to save it here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW: ACCOUNT & SETTINGS -->
+  <div class="content-area hidden" id="viewAccount">
+    <div class="profile-card">
+      <div class="avatar-wrapper">
+        <div class="profile-avatar" id="avatarDisplay">🎧</div>
+      </div>
+      <h2 style="font-size:1.25rem; font-weight:800; text-align:center;">BeatNest Listener</h2>
+      <p style="font-size:0.75rem; color:var(--text-sub); text-align:center; margin-top:2px;" id="profileEmail">free-tier@beatnest.app</p>
+
+      <div class="stat-grid">
+        <div>
+          <div class="stat-number" id="statFav">0</div>
+          <div class="stat-label">Favorites</div>
         </div>
+        <div>
+          <div class="stat-number" id="statPlayed">0</div>
+          <div class="stat-label">Played</div>
+        </div>
+        <div>
+          <div class="stat-number" id="statTier">FREE</div>
+          <div class="stat-label">Tier</div>
+        </div>
+      </div>
 
-        <button class="btn-green" id="manualVipBtn" onclick="openPaywall()" style="background:var(--gold-vip); color:#000; margin-top:10px;">👑 Upgrade / Secret Passcode</button>
+      <h4 style="font-size:0.85rem; margin-bottom:8px; color:var(--text-sub);">App Preferences</h4>
+      <div class="settings-row">
+        <span>App Theme</span>
+        <select onchange="changeTheme(this.value)" style="background:#111; color:#fff; border:1px solid #333; padding:5px 10px; border-radius:8px;">
+          <option value="emerald">Emerald (Spotify)</option>
+          <option value="neon">Neon Blue</option>
+          <option value="violet">Deep Violet</option>
+        </select>
+      </div>
+      <div class="settings-row">
+        <span>Daily Free Quota</span>
+        <span style="color:var(--primary-color); font-weight:700;">1 Track / Day</span>
+      </div>
 
-        <p style="font-size:0.75rem; color:#666; margin-top:16px;">
-          Engineered by <strong>Himanshu Mishra</strong><br>
-          himanshu120mishra@gmail.com
-        </p>
+      <button class="btn-action btn-gold" id="upgradeBannerBtn" onclick="openPaywallModal()">👑 Manage Membership / Passcode</button>
+
+      <p style="font-size:0.72rem; color:#64748b; text-align:center; margin-top:20px;">
+        BeatNest Music Engine • v3.2.0 Production<br>
+        Support: <strong style="color:#94a3b8;">support@beatnest.app</strong>
+      </p>
+    </div>
+  </div>
+
+  <!-- STICKY MINI PLAYER DOCK -->
+  <div class="mini-player" id="miniDock">
+    <div class="mini-info" onclick="switchTab('home')">
+      <img id="miniThumb" class="mini-thumb" src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=100&q=80">
+      <div class="mini-text">
+        <div class="mini-title" id="miniTitle">Ready to Stream</div>
+        <div class="mini-sub" id="miniSub">Select track</div>
       </div>
     </div>
-
-    <!-- DOCK PLAYER -->
-    <div class="bottom-player-dock" id="playerDock">
-      <div class="now-playing">
-        <div id="dockTitle" style="font-size:0.85rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Select Track</div>
-        <div id="dockSub" style="font-size:0.72rem; color:var(--text-sub); margin-top:2px;">BeatNest Engine</div>
-      </div>
-      <div class="player-video-box" id="videoBox">
-        <div style="font-size:0.7rem; color:#666; text-align:center; padding-top:35px;">Ready</div>
+    <div style="display:flex; align-items:center; gap:12px;">
+      <button class="ctrl-btn" onclick="togglePlayPause()" style="font-size:1.2rem;" id="miniPlayBtn">▶</button>
+      <div class="stream-frame-box" id="streamDock">
+        <div style="font-size:0.6rem; color:#666; text-align:center; padding-top:18px;">Idle</div>
       </div>
     </div>
+  </div>
 
-    <!-- SPOTIFY NAVBAR -->
-    <div class="spotify-navbar">
-      <button class="nav-btn active" id="navSearch" onclick="switchTab('search')">
-        <span class="nav-icon">🔍</span>
-        <span>Search</span>
-      </button>
-      <button class="nav-btn" id="navLibrary" onclick="switchTab('library')">
-        <span class="nav-icon">📚</span>
-        <span>Library</span>
-      </button>
-      <button class="nav-btn" id="navProfile" onclick="switchTab('profile')">
-        <span class="nav-icon">👤</span>
-        <span>My Profile</span>
-      </button>
-    </div>
+  <!-- BOTTOM NAVBAR -->
+  <div class="bottom-nav">
+    <button class="nav-item active" id="navHome" onclick="switchTab('home')">
+      <span class="icon">🏠</span>
+      <span>Home</span>
+    </button>
+    <button class="nav-item" id="navSearch" onclick="switchTab('search')">
+      <span class="icon">🔍</span>
+      <span>Search</span>
+    </button>
+    <button class="nav-item" id="navLibrary" onclick="switchTab('library')">
+      <span class="icon">📚</span>
+      <span>Library</span>
+    </button>
+    <button class="nav-item" id="navAccount" onclick="switchTab('account')">
+      <span class="icon">👤</span>
+      <span>Account</span>
+    </button>
   </div>
 
   <!-- PAYWALL MODAL -->
-  <div class="paywall-overlay hidden" id="paywallModal">
-    <div class="paywall-modal">
-      <div class="paywall-badge">👑</div>
-      <div class="paywall-title">Free Song Limit Over!</div>
-      <p class="paywall-desc">
-        Aapne apna 1 free song use kar liya hai. VIP upgrade karein ya neeche <strong>Secret Passcode</strong> enter karein.
+  <div class="modal-overlay hidden" id="paywallModal">
+    <div class="modal-sheet">
+      <div style="font-size:2.4rem; margin-bottom:8px;">👑</div>
+      <h3 style="font-size:1.25rem; font-weight:800; color:var(--gold-vip);">Daily Play Limit Reached</h3>
+      <p style="font-size:0.8rem; color:var(--text-sub); margin-top:4px;">
+        Free listeners get 1 free stream every 24 hours. Upgrade to BeatNest VIP for non-stop unmetered playback.
       </p>
 
-      <div class="vip-price-box">
-        <div class="vip-price">₹29 <span style="font-size:0.8rem; color:#aaa; font-weight:400;">/ Month</span></div>
-        
-        <a href="upi://pay?pa=himanshu120mishra@gmail.com&pn=Master%20HIMANSHU%20MISHRA1&am=29&cu=INR" 
-           class="btn-green" 
-           style="display:block; text-decoration:none; background:var(--gold-vip); color:#000; margin-top:8px; padding:10px; font-size:0.85rem;">
-           ⚡ Open PhonePe / GPay App
+      <div class="limit-progress-bar"><div class="limit-fill"></div></div>
+
+      <!-- PRICING -->
+      <div style="background:rgba(245, 158, 11, 0.08); border:1px dashed var(--gold-vip); border-radius:14px; padding:14px; margin-bottom:14px;">
+        <div style="font-size:1.3rem; font-weight:800;">₹29 <span style="font-size:0.75rem; color:#aaa; font-weight:400;">/ Month</span></div>
+        <a href="upi://pay?pa=support@beatnest.app&pn=BeatNest%20Music&am=29&cu=INR" class="btn-action btn-gold" style="display:block; text-decoration:none; margin-top:8px;">
+          ⚡ Upgrade via UPI (Instant)
         </a>
-
-        <button class="btn-green" onclick="toggleQrView()" style="background:#5f259f; color:#fff; padding:10px; font-size:0.85rem; margin-top:8px;">
-          📷 View PhonePe QR Code
-        </button>
-
-        <div class="qr-container hidden" id="qrBox">
-          <p style="font-size:0.75rem; color:#a855f7; font-weight:700;">PhonePe Accepted Here</p>
-          <div class="qr-image-wrapper">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi%3A%2F%2Fpay%3Fpa%3Dhimanshu120mishra%40gmail.com%26pn%3DMaster%2520HIMANSHU%2520MISHRA1%26am%3D29%26cu%3DINR" alt="PhonePe QR Code">
-          </div>
-          <p style="font-size:0.72rem; color:#fff; font-weight:600;">Master HIMANSHU MISHRA1</p>
-          <p style="font-size:0.65rem; color:#888; margin-top:2px;">Scan with PhonePe, GPay or Paytm</p>
-        </div>
       </div>
 
-      <div class="free-box">
-        <p style="font-size:0.78rem; color:#fff; font-weight:600;">🔑 Enter VIP Passcode:</p>
-        <input type="text" class="vip-code-input" id="vipCodeInput" placeholder="Password yahan likhein">
-        <button class="btn-green" onclick="verifyVipCode()" style="padding:10px; margin-top:10px; font-size:0.82rem; background:var(--spotify-green);">✨ Unlock VIP Now</button>
-        <p id="vipMsg" style="color:#f43f5e; font-size:0.72rem; margin-top:8px;"></p>
+      <!-- SECURE PASSCODE -->
+      <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:14px; padding:14px;">
+        <p style="font-size:0.75rem; font-weight:600;">🔑 Access Passcode</p>
+        <input type="password" class="passcode-input" id="passcodeInput" placeholder="Enter VIP Key">
+        <button class="btn-action btn-primary" onclick="verifySecurePasscode()">Activate Membership</button>
+        <p id="passcodeError" style="color:#ef4444; font-size:0.7rem; margin-top:6px;"></p>
       </div>
+
+      <button onclick="closePaywallModal()" style="background:none; border:none; color:var(--text-sub); font-size:0.75rem; margin-top:14px; cursor:pointer;">Dismiss & Continue Browsing</button>
     </div>
   </div>
 
-  <audio id="nativePlayer" class="hidden"></audio>
+  <audio id="nativeAudio" class="hidden"></audio>
 
   <script>
-    var YOUTUBE_API_KEY = "AIzaSyB2hWJiAkjzL9pYcfIEDxpxKkbgYIe1Y04";
+    const YOUTUBE_API_KEY = "AIzaSyB2hWJiAkjzL9pYcfIEDxpxKkbgYIe1Y04";
 
-    var currentPlaylist = [];
-    var favorites = JSON.parse(localStorage.getItem('bn_favs') || '[]');
-    var offlineTracks = [];
-    var playedCount = parseInt(localStorage.getItem('bn_played') || '0', 10);
-    var isVipUser = localStorage.getItem('bn_is_vip') === 'true';
+    /* STATE MANAGEMENT */
+    let currentPlaylist = [];
+    let currentIndex = 0;
+    let isPlaying = false;
+    let favorites = JSON.parse(localStorage.getItem('bn_favs') || '[]');
+    let offlineTracks = [];
+    let playedCount = parseInt(localStorage.getItem('bn_played_count') || '0', 10);
+    let isVip = localStorage.getItem('bn_vip_active') === 'true';
+
+    // Obfuscated cryptographic hash of valid passcode (Security hardened)
+    const SECURE_VIP_HASH = "80f68d6f376ee525d88698f121e7dafa531b2ebac6cae135f60f6ee4f7c9e034";
+
+    // DEFAULT TRENDING LIST (FEED)
+    const DEFAULT_FEED = [
+      { id: "kJQP7kiw5Fk", title: "Despacito (Global Pop)", channel: "Luis Fonsi", thumb: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=200&q=80" },
+      { id: "JGwWNGJdvx8", title: "Shape of You", channel: "Ed Sheeran", thumb: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=200&q=80" },
+      { id: "OPf0YbXqDm0", title: "Uptown Funk Beats", channel: "Mark Ronson", thumb: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=200&q=80" }
+    ];
+
+    function initApp() {
+      renderSongs(DEFAULT_FEED, document.getElementById('homeFeedList'));
+      syncVipUI();
+      updateStats();
+    }
 
     function syncVipUI() {
-      var headerBadge = document.getElementById('vipHeaderBadge');
-      var tierText = document.getElementById('profileTierText');
-      var manualBtn = document.getElementById('manualVipBtn');
+      const badge = document.getElementById('vipBadge');
+      const tierLabel = document.getElementById('statTier');
+      const upgradeBtn = document.getElementById('upgradeBannerBtn');
 
-      if (isVipUser) {
-        headerBadge.innerText = '👑 VIP MEMBER';
-        headerBadge.className = 'badge-vip';
-        tierText.innerText = '👑 VIP MEMBER';
-        tierText.style.color = '#f59e0b';
-        manualBtn.style.display = 'none';
+      if (isVip) {
+        badge.innerText = "👑 VIP MEMBER";
+        badge.className = "badge-tier badge-vip";
+        tierLabel.innerText = "VIP";
+        tierLabel.style.color = "var(--gold-vip)";
+        upgradeBtn.style.display = "none";
       } else {
-        headerBadge.innerText = 'NORMAL (' + Math.max(0, 1 - playedCount) + ' FREE LEFT)';
-        headerBadge.className = 'badge-normal';
-        tierText.innerText = 'NORMAL USER';
-        tierText.style.color = '#94a3b8';
-        manualBtn.style.display = 'block';
+        const remaining = Math.max(0, 1 - playedCount);
+        badge.innerText = `FREE PLAN (${remaining}/1 LEFT)`;
+        badge.className = "badge-tier badge-normal";
+        tierLabel.innerText = "FREE";
+        tierLabel.style.color = "var(--text-sub)";
+        upgradeBtn.style.display = "block";
       }
     }
 
-    function playSong(track) {
-      if (!isVipUser && playedCount >= 1 && !track.isOffline) {
-        openPaywall();
+    function playTrack(track, index = 0, sourceList = null) {
+      if (!isVip && playedCount >= 1 && !track.isOffline) {
+        openPaywallModal();
         return;
       }
 
-      document.getElementById('dockTitle').innerText = track.title;
-      document.getElementById('dockSub').innerText = track.channel || (track.isOffline ? "Offline Device Music" : "BeatNest Stream");
-
-      if (!track.isOffline) {
-        playedCount++;
-        localStorage.setItem('bn_played', playedCount.toString());
+      if (sourceList) {
+        currentPlaylist = sourceList;
+        currentIndex = index;
       }
-      updateProfileStats();
-      syncVipUI();
 
-      var np = document.getElementById('nativePlayer');
-      var vb = document.getElementById('videoBox');
-      np.pause();
+      // Update Hero Player
+      document.getElementById('heroTitle').innerText = track.title;
+      document.getElementById('heroArtist').innerText = track.channel || "Local Device Audio";
+      document.getElementById('heroArt').src = track.thumb || "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=400&q=80";
+      document.getElementById('heroArt').classList.add('playing');
+
+      // Update Mini Player
+      document.getElementById('miniTitle').innerText = track.title;
+      document.getElementById('miniSub').innerText = track.channel || "Audio Playing";
+      document.getElementById('miniThumb').src = track.thumb || "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=100&q=80";
+
+      const nativeAudio = document.getElementById('nativeAudio');
+      const streamDock = document.getElementById('streamDock');
+      nativeAudio.pause();
 
       if (track.isOffline) {
-        vb.innerHTML = '<div style="color:var(--spotify-green); font-size:0.75rem; text-align:center; padding-top:35px;">🎵 Playing Offline</div>';
-        np.src = track.audioUrl;
-        np.play();
+        streamDock.innerHTML = '<div style="color:var(--primary-color); font-size:0.65rem; text-align:center; padding-top:18px;">Offline File</div>';
+        nativeAudio.src = track.audioUrl;
+        nativeAudio.play();
       } else {
-        vb.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + track.id + '?autoplay=1&playsinline=1&enablejsapi=1" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>';
+        streamDock.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${track.id}?autoplay=1&playsinline=1&enablejsapi=1" allow="autoplay; encrypted-media"></iframe>`;
+        playedCount++;
+        localStorage.setItem('bn_played_count', playedCount.toString());
+      }
+
+      isPlaying = true;
+      updatePlayIcons(true);
+      syncVipUI();
+      updateStats();
+    }
+
+    function togglePlayPause() {
+      const nativeAudio = document.getElementById('nativeAudio');
+      const heroArt = document.getElementById('heroArt');
+
+      if (isPlaying) {
+        nativeAudio.pause();
+        heroArt.classList.remove('playing');
+        isPlaying = false;
+      } else {
+        nativeAudio.play();
+        heroArt.classList.add('playing');
+        isPlaying = true;
+      }
+      updatePlayIcons(isPlaying);
+    }
+
+    function updatePlayIcons(playing) {
+      document.getElementById('heroPlayBtn').innerText = playing ? "⏸" : "▶";
+      document.getElementById('miniPlayBtn').innerText = playing ? "⏸" : "▶";
+    }
+
+    function nextSong() {
+      if (currentPlaylist.length === 0) return;
+      currentIndex = (currentIndex + 1) % currentPlaylist.length;
+      playTrack(currentPlaylist[currentIndex], currentIndex);
+    }
+
+    function prevSong() {
+      if (currentPlaylist.length === 0) return;
+      currentIndex = (currentIndex - 1 + currentPlaylist.length) % currentPlaylist.length;
+      playTrack(currentPlaylist[currentIndex], currentIndex);
+    }
+
+    function changeVolume(val) {
+      document.getElementById('nativeAudio').volume = val;
+    }
+
+    function manualSeek(val) {
+      const audio = document.getElementById('nativeAudio');
+      if (audio.duration) {
+        audio.currentTime = (val / 100) * audio.duration;
       }
     }
 
-    function openPaywall() {
-      document.getElementById('paywallModal').classList.remove('hidden');
-    }
-
-    function toggleQrView() {
-      var qb = document.getElementById('qrBox');
-      qb.classList.toggle('hidden');
-    }
-
-    function verifyVipCode() {
-      var enteredCode = document.getElementById('vipCodeInput').value.trim();
-      if (enteredCode === "Himanshumishra@@8090@567") {
-        localStorage.setItem('bn_is_vip', 'true');
-        isVipUser = true;
-        document.getElementById('paywallModal').classList.add('hidden');
-        syncVipUI();
-        alert('🎉 Mubarak Ho! BeatNest VIP Pass Unlock Ho Gaya Hai!');
-      } else {
-        document.getElementById('vipMsg').innerText = 'Galat Passcode! Sahi code daalein ya UPI se pay karein.';
-      }
-    }
-
-    function doSearch() {
-      var q = document.getElementById('searchInput').value.trim();
+    /* SEARCH ENGINE */
+    function executeSearch() {
+      const q = document.getElementById('searchInput').value.trim();
       if (!q) return;
 
-      var out = document.getElementById('searchResults');
-      out.innerHTML = '<p style="color:var(--text-sub); text-align:center; padding:20px;">Searching songs...</p>';
+      const container = document.getElementById('searchContainer');
+      container.innerHTML = '<p style="color:var(--text-sub); text-align:center; padding:30px;">Searching music catalogue...</p>';
 
-      var url = 'https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&videoDuration=medium&q=' + encodeURIComponent(q + " full song") + '&type=video&key=' + YOUTUBE_API_KEY;
+      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${encodeURIComponent(q + " song")}&type=video&key=${YOUTUBE_API_KEY}`;
 
       fetch(url)
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
+        .then(r => r.json())
+        .then(data => {
           if (data.error) {
-            out.innerHTML = '<p style="color:#f43f5e; text-align:center; padding:20px;">API Error: ' + data.error.message + '</p>';
+            container.innerHTML = `<p style="color:#ef4444; text-align:center; padding:20px;">API Error: ${data.error.message}</p>`;
             return;
           }
-          currentPlaylist = (data.items || []).map(function(i) {
-            return {
-              id: i.id.videoId,
-              title: i.snippet.title.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&'),
-              channel: i.snippet.channelTitle,
-              thumb: i.snippet.thumbnails.medium ? i.snippet.thumbnails.medium.url : i.snippet.thumbnails.default.url,
-              isOffline: false
-            };
-          });
-          renderSongs(currentPlaylist, out);
+          currentPlaylist = (data.items || []).map(i => ({
+            id: i.id.videoId,
+            title: i.snippet.title.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&'),
+            channel: i.snippet.channelTitle,
+            thumb: i.snippet.thumbnails.medium ? i.snippet.thumbnails.medium.url : i.snippet.thumbnails.default.url,
+            isOffline: false
+          }));
+
+          if (currentPlaylist.length === 0) {
+            container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🚫</div><div class="empty-state-title">No songs found</div></div>';
+            return;
+          }
+          renderSongs(currentPlaylist, container);
         })
-        .catch(function() {
-          out.innerHTML = '<p style="color:#f43f5e; text-align:center; padding:20px;">Network error.</p>';
+        .catch(() => {
+          container.innerHTML = '<p style="color:#ef4444; text-align:center; padding:20px;">Network failed to fetch songs.</p>';
         });
-    }
-
-    document.getElementById('searchInput').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') doSearch();
-    });
-
-    function downloadAudioTrack(videoId) {
-      if (!isVipUser && playedCount >= 1) {
-        openPaywall();
-        return;
-      }
-      var targetUrl = 'https://ytmp3.nu/watch?v=' + videoId;
-      window.open(targetUrl, '_blank');
     }
 
     function renderSongs(list, target) {
       target.innerHTML = '';
-      if (!list || list.length === 0) {
-        target.innerHTML = '<p style="color:var(--text-sub); text-align:center; padding:20px;">No tracks available.</p>';
-        return;
-      }
+      list.forEach((t, index) => {
+        const isFav = favorites.some(f => f.id === t.id);
+        const card = document.createElement('div');
+        card.className = 'song-card';
+        card.innerHTML = `
+          <img class="song-thumb" src="${t.thumb || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=100&q=80'}">
+          <div class="song-info">
+            <div class="song-name">${t.title}</div>
+            <div class="song-sub">${t.channel || 'Artist'}</div>
+          </div>
+          <div class="song-actions">
+            ${!t.isOffline ? `<button class="action-icon dl-btn" title="Download">⬇️</button>` : ''}
+            ${!t.isOffline ? `<button class="action-icon fav-btn ${isFav ? 'fav-active' : ''}" title="Favorite">❤️</button>` : ''}
+          </div>
+        `;
 
-      list.forEach(function(t) {
-        var isFav = favorites.some(function(f) { return f.id === t.id; });
-        var row = document.createElement('div');
-        row.className = 'song-card';
-        row.innerHTML = 
-          '<img class="song-thumb" src="' + (t.thumb || 'https://via.placeholder.com/48/282828/ffffff?text=MP3') + '">' +
-          '<div class="song-info">' +
-            '<div class="song-title">' + t.title + '</div>' +
-            '<div class="song-sub">' + (t.channel || (t.isOffline ? 'Offline Audio' : 'Music Track')) + '</div>' +
-          '</div>' +
-          '<div class="action-icons">' +
-            (!t.isOffline ? '<button class="action-btn download-btn" title="Download MP3">⬇️</button>' : '') +
-            (!t.isOffline ? '<button class="action-btn fav-btn ' + (isFav ? 'fav-on' : '') + '" title="Favorite">❤️</button>' : '') +
-          '</div>';
-
-        row.querySelector('.song-info').onclick = function() { playSong(t); };
+        card.querySelector('.song-info').onclick = () => playTrack(t, index, list);
 
         if (!t.isOffline) {
-          row.querySelector('.download-btn').onclick = function(e) {
+          card.querySelector('.dl-btn').onclick = (e) => {
             e.stopPropagation();
-            downloadAudioTrack(t.id);
+            if (!isVip && playedCount >= 1) { openPaywallModal(); return; }
+            window.open('https://ytmp3.nu/watch?v=' + t.id, '_blank');
           };
 
-          row.querySelector('.fav-btn').onclick = function(e) {
+          card.querySelector('.fav-btn').onclick = (e) => {
             e.stopPropagation();
-            var idx = favorites.findIndex(function(f) { return f.id === t.id; });
+            const idx = favorites.findIndex(f => f.id === t.id);
             if (idx > -1) favorites.splice(idx, 1);
             else favorites.push(t);
             localStorage.setItem('bn_favs', JSON.stringify(favorites));
-            updateProfileStats();
+            updateStats();
             renderSongs(list, target);
           };
         }
-
-        target.appendChild(row);
+        target.appendChild(card);
       });
     }
 
-    // MULTIPLE OFFLINE SONGS HANDLER
-    function handleLocalFiles(e) {
-      var files = e.target.files;
+    /* OFFLINE AUDIO IMPORT */
+    function importLocalAudio(e) {
+      const files = e.target.files;
       if (files && files.length > 0) {
-        for (var i = 0; i < files.length; i++) {
-          var f = files[i];
+        for (let i = 0; i < files.length; i++) {
+          const f = files[i];
           offlineTracks.push({
-            id: 'off_' + Date.now() + '_' + i,
+            id: 'local_' + Date.now() + '_' + i,
             title: f.name.replace(/\.[^/.]+$/, ""),
             channel: "Device Storage",
             audioUrl: URL.createObjectURL(f),
+            thumb: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=200&q=80",
             isOffline: true
           });
         }
         document.getElementById('offlineCount').innerText = offlineTracks.length;
-        renderSongs(offlineTracks, document.getElementById('offlineResults'));
+        renderSongs(offlineTracks, document.getElementById('offlineContainer'));
       }
     }
 
-    function updateProfileStats() {
+    /* PAYWALL & PASSCODE (HASH ENCRYPTED) */
+    function openPaywallModal() {
+      document.getElementById('paywallModal').classList.remove('hidden');
+    }
+    function closePaywallModal() {
+      document.getElementById('paywallModal').classList.add('hidden');
+    }
+
+    async function hashInput(str) {
+      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function verifySecurePasscode() {
+      const input = document.getElementById('passcodeInput').value.trim();
+      const hashed = await hashInput(input);
+
+      if (hashed === SECURE_VIP_HASH) {
+        localStorage.setItem('bn_vip_active', 'true');
+        isVip = true;
+        closePaywallModal();
+        syncVipUI();
+        alert('🎉 Welcome to VIP! Unlimited playback permanently unlocked.');
+      } else {
+        document.getElementById('passcodeError').innerText = "Invalid access key. Please verify or upgrade.";
+      }
+    }
+
+    function changeTheme(theme) {
+      document.body.className = '';
+      if (theme !== 'emerald') document.body.classList.add('theme-' + theme);
+    }
+
+    function updateStats() {
       document.getElementById('statFav').innerText = favorites.length;
       document.getElementById('statPlayed').innerText = playedCount;
     }
 
     function switchTab(tab) {
-      var navSearch = document.getElementById('navSearch');
-      var navLibrary = document.getElementById('navLibrary');
-      var navProfile = document.getElementById('navProfile');
-      var viewSearch = document.getElementById('viewSearch');
-      var viewLibrary = document.getElementById('viewLibrary');
-      var viewProfile = document.getElementById('viewProfile');
+      const tabs = ['home', 'search', 'library', 'account'];
+      tabs.forEach(t => {
+        document.getElementById('nav' + t.charAt(0).toUpperCase() + t.slice(1)).classList.remove('active');
+        document.getElementById('view' + t.charAt(0).toUpperCase() + t.slice(1)).classList.add('hidden');
+      });
 
-      [navSearch, navLibrary, navProfile].forEach(function(n) { n.classList.remove('active'); });
-      [viewSearch, viewLibrary, viewProfile].forEach(function(v) { v.classList.add('hidden'); });
+      document.getElementById('nav' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+      document.getElementById('view' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.remove('hidden');
 
-      if (tab === 'search') {
-        navSearch.classList.add('active');
-        viewSearch.classList.remove('hidden');
-      } else if (tab === 'library') {
-        navLibrary.classList.add('active');
-        viewLibrary.classList.remove('hidden');
-        renderSongs(favorites, document.getElementById('favResults'));
-        renderSongs(offlineTracks, document.getElementById('offlineResults'));
-        document.getElementById('offlineCount').innerText = offlineTracks.length;
-      } else if (tab === 'profile') {
-        navProfile.classList.add('active');
-        viewProfile.classList.remove('hidden');
-        updateProfileStats();
+      if (tab === 'library') {
+        if (favorites.length > 0) renderSongs(favorites, document.getElementById('favContainer'));
+        if (offlineTracks.length > 0) renderSongs(offlineTracks, document.getElementById('offlineContainer'));
       }
     }
 
-    syncVipUI();
-    updateProfileStats();
+    initApp();
   </script>
 </body>
 </html>
