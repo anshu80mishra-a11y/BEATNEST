@@ -87,8 +87,8 @@
 
     /* TOP HEADER */
     .top-header {
-      padding: 14px 20px;
-      background: rgba(18, 18, 18, 0.9);
+      padding: 12px 18px;
+      background: rgba(18, 18, 18, 0.95);
       backdrop-filter: blur(12px);
       display: flex;
       justify-content: space-between;
@@ -96,7 +96,7 @@
       position: sticky;
       top: 0;
       z-index: 40;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
     }
     .brand-title {
       font-size: 1.25rem;
@@ -107,6 +107,29 @@
       gap: 8px;
     }
     .brand-title span { color: var(--spotify-green); }
+
+    /* STATUS BADGES */
+    .badge-normal {
+      background: rgba(255,255,255,0.1);
+      color: #94a3b8;
+      border: 1px solid rgba(255,255,255,0.15);
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+    .badge-vip {
+      background: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+      border: 1px solid #f59e0b;
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 20px;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+      letter-spacing: 0.5px;
+    }
 
     /* CONTENT */
     .content-area {
@@ -261,9 +284,7 @@
     .nav-btn.active span.nav-icon { color: var(--spotify-green); }
     .nav-icon { font-size: 1.25rem; }
 
-    /* ====================================
-       🔒 SUBSCRIPTION & CODE POPUP
-    ==================================== */
+    /* 🔒 PAYWALL MODAL */
     .paywall-overlay {
       position: fixed;
       top: 0;
@@ -304,8 +325,6 @@
       margin-bottom: 14px;
     }
     .vip-price { font-size: 1.4rem; font-weight: 800; color: #fff; }
-
-    /* FREE REDEEM CODE BOX */
     .free-box {
       background: #222;
       border: 1px solid rgba(255,255,255,0.12);
@@ -351,7 +370,7 @@
     <div class="top-header">
       <div class="brand-title"><span>⚡</span> BeatNest</div>
       <div style="display:flex; align-items:center; gap:8px;">
-        <span id="vipHeaderBadge" style="font-size:0.72rem; padding:3px 8px; border-radius:12px; background:rgba(255,255,255,0.1); color:#aaa; font-weight:700;">FREE (1 TRACK)</span>
+        <span id="vipHeaderBadge" class="badge-normal">NORMAL (1 TRACK)</span>
         <button id="logoutBtn" style="background:transparent; border:1px solid #444; color:#fff; padding:4px 10px; border-radius:14px; font-size:0.72rem; cursor:pointer;">Log Out</button>
       </div>
     </div>
@@ -398,12 +417,12 @@
             <div class="stat-lbl">Played</div>
           </div>
           <div>
-            <div class="stat-val" id="profileTierText" style="color:#aaa;">FREE</div>
+            <div class="stat-val" id="profileTierText">NORMAL</div>
             <div class="stat-lbl">Plan</div>
           </div>
         </div>
 
-        <button class="btn-green" id="manualVipBtn" style="background:var(--gold-vip); color:#000; margin-top:10px;">👑 BeatNest VIP / Redeem Pass</button>
+        <button class="btn-green" id="manualVipBtn" style="background:var(--gold-vip); color:#000; margin-top:10px;">👑 Upgrade / Secret Passcode</button>
 
         <p style="font-size:0.75rem; color:#666; margin-top:16px;">
           Engineered by <strong>Himanshu Mishra</strong><br>
@@ -440,13 +459,13 @@
     </div>
   </div>
 
-  <!-- 🔒 SUBSCRIPTION & CODE POPUP -->
+  <!-- 🔒 PAYWALL MODAL -->
   <div class="paywall-overlay hidden" id="paywallModal">
     <div class="paywall-modal">
       <div class="paywall-badge">👑</div>
       <div class="paywall-title">Free Song Trial Expired!</div>
       <p class="paywall-desc">
-        Aapne apna 1 free song use kar liya hai. Unlimited songs sunne ke liye VIP upgrade karein ya niche <strong>Secret Passcode</strong> enter karein.
+        Aapne apna 1 free song use kar liya hai. Unlimited gaane sunne ke liye VIP upgrade karein ya neeche <strong>Secret Passcode</strong> enter karein.
       </p>
 
       <!-- PAID OPTION -->
@@ -463,7 +482,7 @@
       <div class="free-box">
         <p style="font-size:0.78rem; color:#fff; font-weight:600;">🔑 Enter Secret VIP Passcode:</p>
         <input type="text" class="vip-code-input" id="vipCodeInput" placeholder="Password yahan likhein">
-        <button class="btn-green" id="verifyVipBtn" style="padding:10px; margin-top:10px; font-size:0.82rem; background:var(--spotify-green);">✨ Unlock Free VIP</button>
+        <button class="btn-green" id="verifyVipBtn" style="padding:10px; margin-top:10px; font-size:0.82rem; background:var(--spotify-green);">✨ Unlock VIP Now</button>
         <p id="vipMsg" style="color:#f43f5e; font-size:0.72rem; margin-top:8px;"></p>
       </div>
     </div>
@@ -532,18 +551,28 @@
       location.reload();
     };
 
+    // 🌟 VIP VS NORMAL BADGE LOGIC
     function syncVipUI() {
       const headerBadge = document.getElementById('vipHeaderBadge');
       const tierText = document.getElementById('profileTierText');
+      const manualBtn = document.getElementById('manualVipBtn');
+
       if (isVipUser) {
-        headerBadge.innerText = '👑 VIP PASS';
-        headerBadge.style.background = 'rgba(245, 158, 11, 0.2)';
-        headerBadge.style.color = '#f59e0b';
-        tierText.innerText = 'VIP (ACTIVE)';
+        // VIP MEMBER STATE
+        headerBadge.innerText = '👑 VIP MEMBER';
+        headerBadge.className = 'badge-vip';
+        
+        tierText.innerText = '👑 VIP MEMBER';
         tierText.style.color = '#f59e0b';
-        document.getElementById('manualVipBtn').style.display = 'none';
+        manualBtn.style.display = 'none';
       } else {
-        headerBadge.innerText = `FREE (${Math.max(0, 1 - playedCount)} Left)`;
+        // NORMAL USER STATE
+        headerBadge.innerText = `NORMAL (${Math.max(0, 1 - playedCount)} FREE LEFT)`;
+        headerBadge.className = 'badge-normal';
+
+        tierText.innerText = 'NORMAL USER';
+        tierText.style.color = '#94a3b8';
+        manualBtn.style.display = 'block';
       }
     }
 
@@ -570,20 +599,4 @@
       } else {
         videoBox.innerHTML = `
           <iframe 
-            src="https://www.youtube-nocookie.com/embed/${track.id}?autoplay=1&playsinline=1&enablejsapi=1" 
-            allow="autoplay; encrypted-media; picture-in-picture" 
-            allowfullscreen>
-          </iframe>
-        `;
-      }
-    }
-
-    // 🔑 AAPKA SECRET VIP PASSWORD CHECK
-    document.getElementById('verifyVipBtn').onclick = () => {
-      const enteredCode = document.getElementById('vipCodeInput').value.trim();
-      
-      // Exact password check: Himanshumishra@@8090@567
-      if (enteredCode === "Himanshumishra@@8090@567") {
-        localStorage.setItem('bn_is_vip', 'true');
-        isVipUser = true;
-       
+            src="https://www.youtube-noco
