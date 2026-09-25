@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>BeatNest Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -17,6 +17,7 @@
       --text-main: #ffffff;
       --text-sub: #b3b3b3;
       --gold-vip: #f59e0b;
+      --phonepe-purple: #5f259f;
     }
     * {
       box-sizing: border-box;
@@ -34,58 +35,6 @@
       overflow-x: hidden;
     }
     .hidden { display: none !important; }
-
-    /* AUTH SCREEN */
-    .auth-wrapper {
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
-    .auth-card {
-      width: 100%;
-      max-width: 380px;
-      background: var(--spotify-dark);
-      border-radius: 18px;
-      padding: 32px 24px;
-      text-align: center;
-      border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-    }
-    .logo-badge { font-size: 2.2rem; color: var(--spotify-green); margin-bottom: 8px; }
-    .input-field {
-      width: 100%;
-      padding: 12px 16px;
-      margin-top: 12px;
-      background: #242424;
-      border: 1px solid transparent;
-      border-radius: 8px;
-      color: #fff;
-      font-size: 0.9rem;
-      outline: none;
-    }
-    .input-field:focus { border-color: var(--spotify-green); }
-    .btn-green {
-      width: 100%;
-      padding: 13px;
-      background: var(--spotify-green);
-      color: #000;
-      border: none;
-      border-radius: 24px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 16px;
-      font-size: 0.92rem;
-      touch-action: manipulation;
-    }
-    .btn-green:active { opacity: 0.85; transform: scale(0.98); }
-    .btn-guest {
-      background: transparent;
-      border: 1px solid #444;
-      color: #fff;
-      margin-top: 10px;
-    }
 
     /* TOP HEADER */
     .top-header {
@@ -110,7 +59,7 @@
     }
     .brand-title span { color: var(--spotify-green); }
 
-    /* STATUS BADGES */
+    /* BADGES */
     .badge-normal {
       background: rgba(255,255,255,0.1);
       color: #94a3b8;
@@ -166,7 +115,7 @@
       cursor: pointer;
     }
 
-    /* SONG CARDS */
+    /* CARDS */
     .song-list { display: flex; flex-direction: column; gap: 8px; }
     .song-card {
       display: flex;
@@ -175,9 +124,7 @@
       padding: 10px 12px;
       background: var(--spotify-card);
       border-radius: 10px;
-      transition: background 0.15s;
     }
-    .song-card:hover { background: var(--spotify-hover); }
     .song-thumb {
       width: 48px;
       height: 48px;
@@ -230,7 +177,20 @@
     .stat-val { font-size: 1.2rem; font-weight: 700; color: var(--spotify-green); }
     .stat-lbl { font-size: 0.75rem; color: var(--text-sub); margin-top: 2px; }
 
-    /* DOCK PLAYER */
+    .btn-green {
+      width: 100%;
+      padding: 13px;
+      background: var(--spotify-green);
+      color: #000;
+      border: none;
+      border-radius: 24px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 16px;
+      font-size: 0.92rem;
+    }
+
+    /* PLAYER DOCK */
     .bottom-player-dock {
       position: fixed;
       bottom: 60px;
@@ -256,7 +216,7 @@
     }
     .player-video-box iframe { width: 100%; height: 100%; border: none; }
 
-    /* BOTTOM NAV */
+    /* NAVBAR */
     .spotify-navbar {
       position: fixed;
       bottom: 0;
@@ -310,13 +270,15 @@
       width: 100%;
       text-align: center;
       box-shadow: 0 10px 40px rgba(245, 158, 11, 0.25);
+      max-height: 90vh;
+      overflow-y: auto;
     }
     .paywall-badge { font-size: 2.3rem; margin-bottom: 6px; }
     .paywall-title { font-size: 1.35rem; font-weight: 800; color: var(--gold-vip); }
     .paywall-desc {
       font-size: 0.82rem;
       color: var(--text-sub);
-      margin: 10px 0 16px;
+      margin: 10px 0 14px;
       line-height: 1.4;
     }
     .vip-price-box {
@@ -327,6 +289,31 @@
       margin-bottom: 14px;
     }
     .vip-price { font-size: 1.4rem; font-weight: 800; color: #fff; }
+
+    /* QR CODE DISPLAY BOX */
+    .qr-container {
+      background: #000;
+      border: 1px solid var(--phonepe-purple);
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .qr-image-wrapper {
+      background: #fff;
+      padding: 8px;
+      border-radius: 8px;
+      display: inline-block;
+      margin: 8px 0;
+    }
+    .qr-image-wrapper img {
+      width: 170px;
+      height: 170px;
+      display: block;
+    }
+
     .free-box {
       background: #222;
       border: 1px solid rgba(255,255,255,0.12);
@@ -346,37 +333,20 @@
       text-align: center;
       font-weight: 700;
     }
-    .vip-code-input:focus { border-color: var(--spotify-green); }
   </style>
 </head>
 <body>
 
-  <!-- AUTH SCREEN -->
-  <div class="auth-wrapper" id="authSection">
-    <div class="auth-card">
-      <div class="logo-badge">⚡</div>
-      <h2 style="font-weight:800; font-size:1.5rem;">BeatNest</h2>
-      <p style="font-size:0.75rem; color:var(--text-sub); margin-top:4px;">DEVELOPER: HIMANSHU MISHRA</p>
-      
-      <input type="email" class="input-field" id="email" placeholder="Email (optional)">
-      <input type="password" class="input-field" id="password" placeholder="Password (optional)">
-      <button class="btn-green" id="loginBtn" onclick="handleLogin()">Log In</button>
-      <button class="btn-green btn-guest" id="guestBtn" onclick="handleGuest()">Guest Access (Direct Play)</button>
-      <p id="authMsg" style="color:#f43f5e; font-size:0.75rem; margin-top:12px;"></p>
-    </div>
-  </div>
-
   <!-- MAIN APP -->
-  <div class="hidden" id="appSection">
+  <div id="appSection">
     <div class="top-header">
       <div class="brand-title"><span>⚡</span> BeatNest</div>
       <div style="display:flex; align-items:center; gap:8px;">
         <span id="vipHeaderBadge" class="badge-normal">NORMAL (1 TRACK)</span>
-        <button onclick="handleLogout()" style="background:transparent; border:1px solid #444; color:#fff; padding:4px 10px; border-radius:14px; font-size:0.72rem; cursor:pointer;">Log Out</button>
       </div>
     </div>
 
-    <!-- 1. SEARCH VIEW -->
+    <!-- 1. SEARCH -->
     <div class="content-area" id="viewSearch">
       <div class="search-box">
         <input type="text" id="searchInput" placeholder="What do you want to listen to?">
@@ -385,7 +355,7 @@
       <div class="song-list" id="searchResults"></div>
     </div>
 
-    <!-- 2. LIBRARY VIEW -->
+    <!-- 2. LIBRARY -->
     <div class="content-area hidden" id="viewLibrary">
       <h3 style="margin-bottom:14px; font-size:1.1rem;">Your Library</h3>
       <div style="background:#181818; padding:16px; border-radius:12px; margin-bottom:18px; text-align:center;">
@@ -401,12 +371,12 @@
       <div class="song-list" id="offlineResults"></div>
     </div>
 
-    <!-- 3. PROFILE VIEW -->
+    <!-- 3. PROFILE -->
     <div class="content-area hidden" id="viewProfile">
       <div class="profile-card">
-        <div class="profile-avatar" id="avatarText">U</div>
-        <h2 id="profileName" style="font-size:1.3rem; font-weight:700;">User</h2>
-        <p id="profileEmail" style="font-size:0.8rem; color:var(--text-sub); margin-top:2px;">user@beatnest.com</p>
+        <div class="profile-avatar">⚡</div>
+        <h2 style="font-size:1.3rem; font-weight:700;">BeatNest User</h2>
+        <p style="font-size:0.8rem; color:var(--text-sub); margin-top:2px;">user@beatnest.com</p>
         
         <div class="profile-stats">
           <div>
@@ -433,7 +403,7 @@
     </div>
 
     <!-- DOCK PLAYER -->
-    <div class="bottom-player-dock hidden" id="playerDock">
+    <div class="bottom-player-dock" id="playerDock">
       <div class="now-playing">
         <div id="dockTitle" style="font-size:0.85rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Select Track</div>
         <div id="dockSub" style="font-size:0.72rem; color:var(--text-sub); margin-top:2px;">BeatNest Engine</div>
@@ -443,7 +413,7 @@
       </div>
     </div>
 
-    <!-- SPOTIFY BOTTOM BAR -->
+    <!-- SPOTIFY NAVBAR -->
     <div class="spotify-navbar">
       <button class="nav-btn active" id="navSearch" onclick="switchTab('search')">
         <span class="nav-icon">🔍</span>
@@ -460,26 +430,46 @@
     </div>
   </div>
 
-  <!-- PAYWALL MODAL -->
+  <!-- PAYWALL MODAL WITH YOUR PHONEPE QR -->
   <div class="paywall-overlay hidden" id="paywallModal">
     <div class="paywall-modal">
       <div class="paywall-badge">👑</div>
       <div class="paywall-title">Free Song Limit Over!</div>
       <p class="paywall-desc">
-        Aapne apna 1 free song use kar liya hai. Aage sunne ke liye VIP upgrade karein ya neeche <strong>Secret Passcode</strong> enter karein.
+        Aapne apna 1 free song use kar liya hai. Aage sunne ke liye VIP upgrade karein ya QR scan karke pay karein.
       </p>
 
+      <!-- PAID OPTION -->
       <div class="vip-price-box">
         <div class="vip-price">₹29 <span style="font-size:0.8rem; color:#aaa; font-weight:400;">/ Month</span></div>
-        <a href="upi://pay?pa=himanshu120mishra@gmail.com&pn=BeatNest%20VIP&am=29&cu=INR" 
+        
+        <!-- DIRECT UPI OPEN BUTTON -->
+        <a href="upi://pay?pa=himanshu120mishra@gmail.com&pn=Master%20HIMANSHU%20MISHRA1&am=29&cu=INR" 
            class="btn-green" 
            style="display:block; text-decoration:none; background:var(--gold-vip); color:#000; margin-top:8px; padding:10px; font-size:0.85rem;">
-           Pay ₹29 via UPI
+           ⚡ Open PhonePe / GPay App
         </a>
+
+        <!-- TOGGLE QR VIEW BUTTON -->
+        <button class="btn-green" onclick="toggleQrView()" style="background:#5f259f; color:#fff; padding:10px; font-size:0.85rem; margin-top:8px;">
+          📷 View PhonePe QR Code
+        </button>
+
+        <!-- YOUR EXACT PHONEPE QR CODE DISPLAY -->
+        <div class="qr-container hidden" id="qrBox">
+          <p style="font-size:0.75rem; color:#a855f7; font-weight:700;">PhonePe Accepted Here</p>
+          <div class="qr-image-wrapper">
+            <!-- Dynamic Vector Render of your Exact PhonePe QR -->
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi%3A%2F%2Fpay%3Fpa%3Dhimanshu120mishra%40gmail.com%26pn%3DMaster%2520HIMANSHU%2520MISHRA1%26am%3D29%26cu%3DINR" alt="PhonePe QR Code">
+          </div>
+          <p style="font-size:0.72rem; color:#fff; font-weight:600;">Master HIMANSHU MISHRA1</p>
+          <p style="font-size:0.65rem; color:#888; margin-top:2px;">Scan with PhonePe, GPay or Paytm</p>
+        </div>
       </div>
 
+      <!-- SECRET CODE SECTION -->
       <div class="free-box">
-        <p style="font-size:0.78rem; color:#fff; font-weight:600;">🔑 Enter Secret VIP Passcode:</p>
+        <p style="font-size:0.78rem; color:#fff; font-weight:600;">🔑 Enter VIP Passcode:</p>
         <input type="text" class="vip-code-input" id="vipCodeInput" placeholder="Password yahan likhein">
         <button class="btn-green" onclick="verifyVipCode()" style="padding:10px; margin-top:10px; font-size:0.82rem; background:var(--spotify-green);">✨ Unlock VIP Now</button>
         <p id="vipMsg" style="color:#f43f5e; font-size:0.72rem; margin-top:8px;"></p>
@@ -497,38 +487,6 @@
     var offlineTracks = [];
     var playedCount = parseInt(localStorage.getItem('bn_played') || '0', 10);
     var isVipUser = localStorage.getItem('bn_is_vip') === 'true';
-
-    function enterApp(name, email) {
-      document.getElementById('authSection').classList.add('hidden');
-      document.getElementById('appSection').classList.remove('hidden');
-      document.getElementById('playerDock').classList.remove('hidden');
-      document.getElementById('profileName').innerText = name || 'User';
-      document.getElementById('profileEmail').innerText = email || 'user@beatnest.com';
-      document.getElementById('avatarText').innerText = ((name || 'U').charAt(0)).toUpperCase();
-      syncVipUI();
-      updateProfileStats();
-    }
-
-    function handleLogin() {
-      var emailVal = document.getElementById('email').value.trim();
-      var pwdVal = document.getElementById('password').value.trim();
-      var dName = emailVal ? emailVal.split('@')[0] : 'User';
-      var dEmail = emailVal || 'user@beatnest.com';
-      var uData = { name: dName, email: dEmail };
-      localStorage.setItem('bn_current_user', JSON.stringify(uData));
-      enterApp(uData.name, uData.email);
-    }
-
-    function handleGuest() {
-      var gData = { name: 'Guest User', email: 'guest@beatnest.com' };
-      localStorage.setItem('bn_current_user', JSON.stringify(gData));
-      enterApp(gData.name, gData.email);
-    }
-
-    function handleLogout() {
-      localStorage.removeItem('bn_current_user');
-      location.reload();
-    }
 
     function syncVipUI() {
       var headerBadge = document.getElementById('vipHeaderBadge');
@@ -581,6 +539,11 @@
       document.getElementById('paywallModal').classList.remove('hidden');
     }
 
+    function toggleQrView() {
+      var qb = document.getElementById('qrBox');
+      qb.classList.toggle('hidden');
+    }
+
     function verifyVipCode() {
       var enteredCode = document.getElementById('vipCodeInput').value.trim();
       if (enteredCode === "Himanshumishra@@8090@567") {
@@ -621,7 +584,7 @@
           });
           renderSongs(currentPlaylist, out);
         })
-        .catch(function(e) {
+        .catch(function() {
           out.innerHTML = '<p style="color:#f43f5e; text-align:center; padding:20px;">Network error.</p>';
         });
     }
@@ -724,14 +687,8 @@
       }
     }
 
-    // Auto-login check
-    var savedUser = localStorage.getItem('bn_current_user');
-    if (savedUser) {
-      try {
-        var u = JSON.parse(savedUser);
-        enterApp(u.name, u.email);
-      } catch(e) {}
-    }
+    syncVipUI();
+    updateProfileStats();
   </script>
 </body>
 </html>
