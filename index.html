@@ -359,26 +359,29 @@
     <!-- 1. SEARCH -->
     <div class="content-area" id="viewSearch">
       <div class="search-box">
-        <input type="text" id="searchInput" placeholder="What do you want to listen to?">
+        <input type="text" id="searchInput" placeholder="Search song or artist...">
         <button class="search-btn" onclick="doSearch()">Search</button>
       </div>
       <div class="song-list" id="searchResults"></div>
     </div>
 
-    <!-- 2. LIBRARY -->
+    <!-- 2. LIBRARY (OFFLINE HUB) -->
     <div class="content-area hidden" id="viewLibrary">
-      <h3 style="margin-bottom:14px; font-size:1.1rem;">Your Library</h3>
-      <div style="background:#181818; padding:16px; border-radius:12px; margin-bottom:18px; text-align:center;">
-        <p style="font-size:0.8rem; color:var(--text-sub); margin-bottom:10px;">Offline gaane sunne ke liye device se MP3 chunein:</p>
-        <input type="file" id="localFileInput" accept="audio/*" style="display:none;" onchange="handleLocalFile(event)">
-        <button class="btn-green" style="width:auto; padding:8px 20px; font-size:0.8rem;" onclick="document.getElementById('localFileInput').click()">+ Add Local Song</button>
+      <h3 style="margin-bottom:14px; font-size:1.1rem;">Offline & Saved Music</h3>
+      
+      <!-- DIRECT LOCAL MP3 IMPORT (OFFLINE READY) -->
+      <div style="background:#181818; padding:18px; border-radius:14px; margin-bottom:18px; text-align:center; border:1px dashed rgba(255,255,255,0.15);">
+        <p style="font-size:0.85rem; font-weight:600; margin-bottom:4px;">📥 Play Offline Songs (No Internet)</p>
+        <p style="font-size:0.75rem; color:var(--text-sub); margin-bottom:12px;">Apne phone se download kiya hua koi bhi MP3 gaana yahan chunein:</p>
+        <input type="file" id="localFileInput" accept="audio/*" multiple style="display:none;" onchange="handleLocalFiles(event)">
+        <button class="btn-green" style="width:auto; padding:10px 22px; font-size:0.82rem;" onclick="document.getElementById('localFileInput').click()">+ Add Offline Songs</button>
       </div>
 
-      <h4 style="font-size:0.9rem; color:var(--text-sub); margin-bottom:10px;">Favorite Songs</h4>
-      <div class="song-list" id="favResults"></div>
-
-      <h4 style="font-size:0.9rem; color:var(--text-sub); margin:18px 0 10px;">Device Offline Songs</h4>
+      <h4 style="font-size:0.9rem; color:var(--text-sub); margin-bottom:10px;">Device Offline Songs (<span id="offlineCount">0</span>)</h4>
       <div class="song-list" id="offlineResults"></div>
+
+      <h4 style="font-size:0.9rem; color:var(--text-sub); margin:20px 0 10px;">Favorite Online Tracks</h4>
+      <div class="song-list" id="favResults"></div>
     </div>
 
     <!-- 3. PROFILE -->
@@ -423,7 +426,7 @@
       </div>
     </div>
 
-    <!-- NAVBAR -->
+    <!-- SPOTIFY NAVBAR -->
     <div class="spotify-navbar">
       <button class="nav-btn active" id="navSearch" onclick="switchTab('search')">
         <span class="nav-icon">🔍</span>
@@ -513,25 +516,27 @@
     }
 
     function playSong(track) {
-      if (!isVipUser && playedCount >= 1) {
+      if (!isVipUser && playedCount >= 1 && !track.isOffline) {
         openPaywall();
         return;
       }
 
       document.getElementById('dockTitle').innerText = track.title;
-      document.getElementById('dockSub').innerText = track.channel || "Audio Playing";
+      document.getElementById('dockSub').innerText = track.channel || (track.isOffline ? "Offline Device Music" : "BeatNest Stream");
 
-      playedCount++;
-      localStorage.setItem('bn_played', playedCount.toString());
+      if (!track.isOffline) {
+        playedCount++;
+        localStorage.setItem('bn_played', playedCount.toString());
+      }
       updateProfileStats();
       syncVipUI();
 
       var np = document.getElementById('nativePlayer');
+      var vb = document.getElementById('videoBox');
       np.pause();
 
-      var vb = document.getElementById('videoBox');
       if (track.isOffline) {
-        vb.innerHTML = '<div style="color:var(--spotify-green); font-size:0.75rem; text-align:center; padding-top:35px;">Offline MP3</div>';
+        vb.innerHTML = '<div style="color:var(--spotify-green); font-size:0.75rem; text-align:center; padding-top:35px;">🎵 Playing Offline</div>';
         np.src = track.audioUrl;
         np.play();
       } else {
@@ -597,14 +602,11 @@
       if (e.key === 'Enter') doSearch();
     });
 
-    // 🚀 UNBLOCKED FAST MP3 CONVERTER (INDIA & GLOBAL SUPPORTED)
     function downloadAudioTrack(videoId) {
       if (!isVipUser && playedCount >= 1) {
         openPaywall();
         return;
       }
-      
-      // ytmp3.nu works across all networks without DNS block
       var targetUrl = 'https://ytmp3.nu/watch?v=' + videoId;
       window.open(targetUrl, '_blank');
     }
@@ -624,10 +626,10 @@
           '<img class="song-thumb" src="' + (t.thumb || 'https://via.placeholder.com/48/282828/ffffff?text=MP3') + '">' +
           '<div class="song-info">' +
             '<div class="song-title">' + t.title + '</div>' +
-            '<div class="song-sub">' + (t.channel || 'Music Track') + '</div>' +
+            '<div class="song-sub">' + (t.channel || (t.isOffline ? 'Offline Audio' : 'Music Track')) + '</div>' +
           '</div>' +
           '<div class="action-icons">' +
-            (!t.isOffline ? '<button class="action-btn download-btn" title="Download Audio">⬇️</button>' : '') +
+            (!t.isOffline ? '<button class="action-btn download-btn" title="Download MP3">⬇️</button>' : '') +
             (!t.isOffline ? '<button class="action-btn fav-btn ' + (isFav ? 'fav-on' : '') + '" title="Favorite">❤️</button>' : '') +
           '</div>';
 
@@ -654,16 +656,21 @@
       });
     }
 
-    function handleLocalFile(e) {
-      var file = e.target.files[0];
-      if (file) {
-        offlineTracks.push({
-          id: 'off_' + Date.now(),
-          title: file.name.replace(/\.[^/.]+$/, ""),
-          channel: "Local Storage Audio",
-          audioUrl: URL.createObjectURL(file),
-          isOffline: true
-        });
+    // MULTIPLE OFFLINE SONGS HANDLER
+    function handleLocalFiles(e) {
+      var files = e.target.files;
+      if (files && files.length > 0) {
+        for (var i = 0; i < files.length; i++) {
+          var f = files[i];
+          offlineTracks.push({
+            id: 'off_' + Date.now() + '_' + i,
+            title: f.name.replace(/\.[^/.]+$/, ""),
+            channel: "Device Storage",
+            audioUrl: URL.createObjectURL(f),
+            isOffline: true
+          });
+        }
+        document.getElementById('offlineCount').innerText = offlineTracks.length;
         renderSongs(offlineTracks, document.getElementById('offlineResults'));
       }
     }
@@ -692,6 +699,7 @@
         viewLibrary.classList.remove('hidden');
         renderSongs(favorites, document.getElementById('favResults'));
         renderSongs(offlineTracks, document.getElementById('offlineResults'));
+        document.getElementById('offlineCount').innerText = offlineTracks.length;
       } else if (tab === 'profile') {
         navProfile.classList.add('active');
         viewProfile.classList.remove('hidden');
