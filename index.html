@@ -186,7 +186,7 @@ const CFG={
   },
   ytKey:"AIzaSyDX7-9ciPbg_lC3x7mFsneGb1dzT8gI9fU", // YouTube Data API key
   jamendoId:"", // <<< PASTE YOUR JAMENDO CLIENT ID BETWEEN THE TWO QUOTES "" ON THIS LINE
-  supportEmail:"support@beatnest.app",
+  contactEmail:"", // <<< PASTE YOUR EMAIL BETWEEN THE TWO QUOTES "" ON THIS LINE (users will write to you here)
   // SHA-256 hash of your VIP code (the code itself is not in this file)
   vipHashes:["910f6e8e7be8aeb9862fc602768cbcef8fb438592bc96d0be978398474c6d2da"]
 };
@@ -294,7 +294,7 @@ function vipSheet(blocked){
   h+=`<p>${blocked?`The free plan has ${CFG.freePlays} plays a day. Go VIP to keep listening now, or come back tomorrow.`:v?`Your membership is active for ${vipLeft()} more days.`:`₹${CFG.price} a month. Unlimited plays, no daily limit.`}</p>`;
   h+=accountHint();
   if(CFG.upiId)h+=`<div class="panelrow"><span><b>1. Pay ₹${CFG.price}</b><br><small>Use any UPI app</small></span><a class="btn primary" href="upi://pay?pa=${encodeURIComponent(CFG.upiId)}&amp;pn=${encodeURIComponent(CFG.upiName)}&amp;am=${CFG.price}&amp;cu=INR&amp;tn=BEATNEST%20VIP">Pay with UPI</a></div><div class="panelrow"><span>UPI ID<br><small>${esc(CFG.upiId)}</small></span><button class="btn ghost" data-act="copyupi">Copy</button></div>`;
-  h+=`<div class="panelrow"><span><b>2. Send your payment screenshot</b><br><small>You get a VIP code in reply</small></span><a class="btn ghost" href="mailto:${CFG.supportEmail}?subject=BEATNEST%20VIP%20payment">Email it</a></div>`;
+  if(CFG.contactEmail)h+=`<div class="panelrow"><span><b>2. Send your payment screenshot</b><br><small>VIP is added after the developer checks it</small></span><a class="btn ghost" href="mailto:${esc(CFG.contactEmail)}?subject=BEATNEST%20VIP%20payment">Email it</a></div>`;
   h+=`<p style="margin-top:14px"><b style="color:var(--ink)">3. Enter your VIP code</b></p><input class="field" id="vipcode" placeholder="BN-XXXX-XXXX" autocomplete="off" autocapitalize="characters" aria-label="VIP code"><div class="btns"><button class="btn ghost" data-act="close">Not now</button><button class="btn primary" data-act="activate">Activate VIP</button></div>`;
   sheet(h);
 }
@@ -418,7 +418,9 @@ function ytBlock(q){
 let fb=null,fbUser=null,fbUnsub=null,syncT=null,firstSnap=true;
 function cloudKey(k){return["favs","lists","recents","played","yts"].includes(k)}
 function track(n,p){try{if(fb&&fb.an)fb.logEvent(fb.an,n,p||{})}catch(e){}}
-async function fbInit(){
+let fbP=null,fbErr="";
+function fbInit(){return fbP||(fbP=fbLoad())}
+async function fbLoad(){
   if(!CFG.firebase||fb)return;
   try{
     const base="https://www.gstatic.com/firebasejs/10.12.2/";
@@ -437,7 +439,7 @@ async function fbInit(){
       render();
     });
     render();
-  }catch(e){fb=null}
+  }catch(e){fb=null;fbErr=String(e&&e.message||e);fbP=null}
 }
 function watchCloud(){
   const ref=fb.fs.doc(fb.db,"users",fbUser.uid);
@@ -469,16 +471,31 @@ async function cloudPush(){
   }catch(e){}
 }
 async function fbSignIn(){
-  if(!fb){toast("Sign-in isn't available right now. Check your internet.");return}
+  if(!fb)await fbInit();
+  if(!fb){toast("Sign-in couldn't start"+(fbErr?": "+fbErr.slice(0,80):". Check your internet."));return}
   try{
     await fb.au.signInWithPopup(fb.auth,new fb.au.GoogleAuthProvider());
     track("login",{method:"google"});toast("Signed in");
   }catch(e){
     const c=e&&e.code;
-    toast(c==="auth/popup-closed-by-user"||c==="auth/cancelled-popup-request"?"Sign-in was cancelled.":c==="auth/unauthorized-domain"?"Add this site under Authorized domains in Firebase.":c==="auth/popup-blocked"?"Allow pop-ups for this site, then try again.":"Couldn't sign in. Try again.");
+    const M={
+      "auth/popup-closed-by-user":"Sign-in was cancelled.",
+      "auth/cancelled-popup-request":"Sign-in was cancelled.",
+      "auth/popup-blocked":"Allow pop-ups for this site, then try again.",
+      "auth/unauthorized-domain":"Add anshu80mishra-a11y.github.io under Authorized domains in Firebase.",
+      "auth/operation-not-allowed":"Turn on Google sign-in in Firebase (Authentication, Sign-in method).",
+      "auth/network-request-failed":"No internet connection. Try again.",
+      "auth/invalid-api-key":"The Firebase API key is not valid.",
+      "auth/api-key-not-valid.-please-pass-a-valid-api-key.":"The Firebase API key is not valid."
+    };
+    toast(M[c]||"Couldn't sign in ("+(c||"unknown error")+").");
   }
 }
 async function fbSignOut(){try{await fb.au.signOut(fb.auth);toast("Signed out")}catch(e){}}
+function aboutRows(){
+  const em=CFG.contactEmail;
+  return`<div class="panelrow"><span>Developer<br><small>Himanshu Mishra</small></span></div><div class="panelrow"><span>Contact us<br><small>${em?"Any problem? Email "+esc(em):"Any problem? Contact the developer."}</small></span>${em?`<a class="btn ghost" href="mailto:${esc(em)}?subject=BEATNEST%20help">Email</a>`:""}</div>`;
+}
 function accountRow(){
   if(!CFG.firebase)return"";
   if(fbUser)return`<div class="panelrow"><span>${esc(fbUser.displayName||"Signed in")}<br><small>${esc(fbUser.email||"")}</small></span><button class="btn ghost" data-act="signout">Sign out</button></div>`;
@@ -617,7 +634,8 @@ function renderMe(){
   <div class="panelrow"><span>Sleep timer<br><small>${sleepAt?"Stops in about "+Math.max(1,Math.round((sleepAt-Date.now())/60000))+" min":"Off"}</small></span><button class="btn ghost" data-act="sleep">${ic("moon")} Set</button></div>
   <div class="panelrow"><span>Clear play history</span><button class="btn ghost" data-act="clearhist">Clear</button></div>
   <div class="panelrow"><span>Reset the app<br><small>Removes saved songs, favorites and playlists.</small></span><button class="btn ghost" data-act="reset">Reset</button></div>`;
-  h+=`<p style="margin-top:22px"><small>BEATNEST v5.4 · Keys: Space play/pause, ← → seek, N next, P previous</small></p>`;
+  h+=aboutRows();
+  h+=`<p style="margin-top:22px"><small>BEATNEST v5.5 · Developed by Himanshu Mishra · Keys: Space play/pause, ← → seek, N next, P previous</small></p>`;
   $("#v-me").innerHTML=h;
 }
 function renderMini(){
