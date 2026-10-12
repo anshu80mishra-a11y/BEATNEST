@@ -39,7 +39,6 @@ main{flex:1;overflow-y:auto;padding:18px 18px 200px;-webkit-overflow-scrolling:t
 .sec h2{font-size:19px;font-weight:600}
 .link{color:var(--accent);font-weight:700;padding:6px 4px}
 
-/* the one bold element: the record */
 .hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;padding:8px 0 4px}
 .hero h2{font-size:clamp(28px,8vw,38px);font-weight:800;line-height:1.05;max-width:14ch}
 .hero p{margin:0;color:var(--muted);max-width:34ch}
@@ -173,9 +172,9 @@ const CFG={
   price:29,            // VIP price per month (₹)
   vipDays:30,          // days of VIP each code gives
   freePlays:10,        // free plays per day for songs you add (starter mixes are always free)
-  upiId:"himanshu120mishra@gmail.com", // payee UPI ID, copied from your old BEATNEST page: please check it
+  upiId:"himanshu120mishra@gmail.com",
   upiName:"BEATNEST",
-  firebase:{ // Firebase web config (safe to be public; real protection is Firestore rules)
+  firebase:{
     apiKey:"AIzaSyBfZ5QsR6JQ5RTNX1NiIIVuMJ5GC1m7JgE",
     authDomain:"exmmusic.firebaseapp.com",
     projectId:"exmmusic",
@@ -184,9 +183,8 @@ const CFG={
     appId:"1:346732395794:web:8c6840b04ef89cd67347cb",
     measurementId:"G-XNN3R6CWY8"
   },
-  ytKey:"AIzaSyBfZ5QsR6JQ5RTNX1NiIIVuMJ5GC1m7JgE", // <<< YOUR API KEY IS SET HERE
+  ytKey:"AIzaSyDX7-9ciPbg_lC3x7mFsneGb1dzT8gI9fU", // Updated YouTube API Key
   supportEmail:"support@beatnest.app",
-  // SHA-256 hash of your VIP code (the code itself is not in this file)
   vipHashes:["910f6e8e7be8aeb9862fc602768cbcef8fb438592bc96d0be978398474c6d2da"]
 };
 const DEMOS=[
@@ -216,7 +214,7 @@ const IC={
  heart:'<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>',
  search:'<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
  home:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
- lib:'<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+ lib:'<path d="M9 18V5l12-2v13"/><circle cx="6" border="0" r="3"/><circle cx="18" cy="16" r="3"/>',
  user:'<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
  moon:'<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
  plus:'<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
@@ -236,7 +234,7 @@ let db=null;
 const openDB=()=>new Promise(res=>{try{const r=indexedDB.open("beatnest",1);r.onupgradeneeded=()=>r.result.createObjectStore("tracks",{keyPath:"id"});r.onsuccess=()=>res(r.result);r.onerror=()=>res(null)}catch(e){res(null)}});
 const tx=(mode,fn)=>new Promise(res=>{if(!db)return res(null);try{const t=db.transaction("tracks",mode),q=fn(t.objectStore("tracks"));t.oncomplete=()=>res(q&&q.result);t.onerror=()=>res(null);t.onabort=()=>res(null)}catch(e){res(null)}});
 
-/* ---------- demo synth: tiny browser-made songs so the app is never empty ---------- */
+/* ---------- demo synth ---------- */
 function synth(d){
   const sr=22050,secs=28,n=sr*secs,pcm=new Int16Array(n),beat=60/d.bpm,sc=d.scale,TAU=Math.PI*2;
   const osc=(ph,w)=>{const p=ph-Math.floor(ph);return w==="saw"?2*p-1:w==="square"?(p<.5?.5:-.5):Math.sin(TAU*p)};
@@ -397,7 +395,7 @@ async function ytSearch(){
     ytCache[q]=ids;ytState={q,ids,loading:false};
   }catch(e){
     const m=String(e.message||e);
-    ytState={q,ids:[],loading:false,err:/quota/i.test(m)?"YouTube's daily search limit is used up. Try again tomorrow.":/referer|referrer|not valid|key/i.test(m)?"The YouTube key was rejected (key ends "+CFG.ytKey.slice(-4)+"): "+m:/fetch|network/i.test(m)?"Couldn't reach YouTube. Check your internet.":m};
+    ytState={q,ids:[],loading:false,err:/quota/i.test(m)?"YouTube's daily search limit is used up. Try again tomorrow.":/referer|referrer|not valid|key/i.test(m)?"The YouTube key was rejected: "+m:/fetch|network/i.test(m)?"Couldn't reach YouTube. Check your internet.":m};
   }
   renderSearch();
 }
@@ -410,7 +408,7 @@ function ytBlock(q){
   return b+(st.ids.length?rows(st.ids,"yt"):`<div class="empty"><b>No videos found</b>Try a different spelling or the artist name.</div>`);
 }
 
-/* ---------- Firebase: Google sign-in, cloud sync, VIP from account, analytics ---------- */
+/* ---------- Firebase ---------- */
 let fb=null,fbUser=null,fbUnsub=null,syncT=null,firstSnap=true;
 function cloudKey(k){return["favs","lists","recents","played","yts"].includes(k)}
 function track(n,p){try{if(fb&&fb.an)fb.logEvent(fb.an,n,p||{})}catch(e){}}
@@ -437,4 +435,301 @@ async function fbInit(){
 }
 function watchCloud(){
   const ref=fb.fs.doc(fb.db,"users",fbUser.uid);
-  fbUnsub=fb.fs.onSnapshot(ref,snap
+  fbUnsub=fb.fs.onSnapshot(ref,snap=>{
+    const d=snap.exists()?snap.data():null,v=d&&d.vipUntil;
+    cloudVip=v?(v.toMillis?v.toMillis():Number(v)||0):0;
+    if(firstSnap){firstSnap=false;mergeCloud(d)}
+    render();
+  },()=>toast("Couldn't sync with your account."));
+}
+function mergeCloud(d){
+  if(d){
+    favs=[...new Set([...(d.favs||[]),...favs])];
+    (d.lists||[]).forEach(cl=>{const l=lists.find(x=>x.id===cl.id);if(l)l.ids=[...new Set([...(cl.ids||[]),...l.ids])];else lists.push({id:cl.id,name:cl.name,ids:cl.ids||[]})});
+    recents=[...new Set([...recents,...(d.recents||[])])].slice(0,20);
+    played=Math.max(played,d.played||0);
+    Object.assign(ytSaved,d.yts||{});ytMap=Object.assign({},ytSaved,ytMap);
+    store.set("yts",ytSaved);store.set("favs",favs);store.set("lists",lists);store.set("recents",recents);store.set("played",played);
+  }
+  cloudSched();
+}
+function cloudSched(){if(!fb||!fbUser)return;clearTimeout(syncT);syncT=setTimeout(cloudPush,1200)}
+async function cloudPush(){
+  if(!fb||!fbUser)return;
+  const need=new Set([...favs,...recents,...lists.flatMap(l=>l.ids)]),yts={};
+  need.forEach(id=>{if(ytMap[id])yts[id]=ytMap[id]});
+  try{
+    await fb.fs.setDoc(fb.fs.doc(fb.db,"users",fbUser.uid),{favs,lists,recents:recents.slice(0,20),played,yts,email:fbUser.email||"",name:fbUser.displayName||"",updatedAt:fb.fs.serverTimestamp()},{merge:true});
+  }catch(e){}
+}
+async function fbSignIn(){
+  if(!fb){toast("Sign-in isn't available right now. Check your internet.");return}
+  try{
+    await fb.au.signInWithPopup(fb.auth,new fb.au.GoogleAuthProvider());
+    track("login",{method:"google"});toast("Signed in");
+  }catch(e){
+    const c=e&&e.code;
+    toast(c==="auth/popup-closed-by-user"||c==="auth/cancelled-popup-request"?"Sign-in was cancelled.":c==="auth/unauthorized-domain"?"Add this site under Authorized domains in Firebase.":c==="auth/popup-blocked"?"Allow pop-ups for this site, then try again.":"Couldn't sign in. Try again.");
+  }
+}
+async function fbSignOut(){try{await fb.au.signOut(fb.auth);toast("Signed out")}catch(e){}
+}
+function accountRow(){
+  if(!CFG.firebase)return"";
+  if(fbUser)return`<div class="panelrow"><span>${esc(fbUser.displayName||"Signed in")}<br><small>${esc(fbUser.email||"")}</small></span><button class="btn ghost" data-act="signout">Sign out</button></div>`;
+  return`<div class="panelrow"><span>Account<br><small>Sync favorites, playlists and VIP across devices</small></span><button class="btn primary" data-act="signin">Sign in</button></div>`;
+}
+function accountHint(){
+  if(!CFG.firebase)return"";
+  return fbUser?`<p><small>Signed in as ${esc(fbUser.email||"your account")}. Use this email when you send your payment screenshot and VIP turns on for your account.</small></p>`:`<div class="btns" style="justify-content:flex-start;margin-bottom:10px"><button class="btn ghost" data-act="signin">Sign in with Google first</button></div>`;
+}
+
+/* ---------- media session ---------- */
+function meta(){
+  if(!("mediaSession" in navigator)||!cur)return;
+  try{navigator.mediaSession.metadata=new MediaMetadata({title:cur.title,artist:cur.artist,album:"BEATNEST"})}catch(e){}
+}
+if("mediaSession" in navigator){
+  const ms=navigator.mediaSession,h=(a,f)=>{try{ms.setActionHandler(a,f)}catch(e){}};
+  h("play",doPlay);h("pause",doPause);h("previoustrack",()=>step(-1));h("nexttrack",()=>step(1));
+  h("seekto",d=>{if(d.seekTime!=null)seekTo(d.seekTime)});
+}
+
+/* ---------- rendering ---------- */
+function row(t,ctx){
+  const fav=favs.includes(t.id),on=cur&&cur.id===t.id;
+  return`<div class="row${on?" on":""}"><button class="rowmain" data-act="play" data-id="${t.id}" data-ctx="${ctx}" aria-label="Play ${esc(t.title)} by ${esc(t.artist)}">${cov(t)}<span class="meta"><b>${esc(t.title)}</b><small>${esc(t.artist)}</small></span>${on&&!isPaused()?'<span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>':""}</button><button class="ib" data-act="fav" data-id="${t.id}" aria-pressed="${fav}" aria-label="${fav?"Remove from favorites":"Add to favorites"}">${ic("heart",fav)}</button><button class="ib" data-act="more" data-id="${t.id}" aria-label="More options for ${esc(t.title)}">${ic("more")}</button></div>`;
+}
+const rows=(ids,ctx)=>ids.map(byId).filter(Boolean).map(t=>row(t,ctx)).join("");
+const disc=t=>`<div class="disc" aria-hidden="true"><div class="lbl" style="${t?covStyle(t):"background:var(--accent)"}">${t?esc(t.title.trim().charAt(0).toUpperCase()):"B"}</div></div>`;
+
+function renderHome(){
+  const rec=recents.filter(byId);
+  let h=`<div class="brand"><div class="mark">${ic("play")}</div><h1>BEATNEST</h1></div>`;
+  if(cur){
+    h+=`<div class="hero">${disc(cur)}<h2>${esc(cur.title)}</h2><p>${esc(cur.artist)}</p><div class="btns"><button class="btn primary" data-act="npopen">Open player</button></div></div>`;
+  }else{
+    h+=`<div class="hero">${disc()}<h2>Your music, even without internet</h2><p>Add MP3 files from your phone. They stay saved in this app.</p><div class="btns"><button class="btn primary" data-act="add">${ic("plus")} Add songs</button><button class="btn ghost" data-act="play" data-id="demo-1" data-ctx="lib">Play a starter mix</button>${CFG.ytKey?`<button class="btn ghost" data-act="tab" data-id="search">Search YouTube</button>`:""}</div></div>`;
+  }
+  h+=vipCard();
+  if(rec.length)h+=`<div class="sec"><h2>Play again</h2><button class="link" data-act="clearhist">Clear</button></div><div class="shelf">${rec.slice(0,10).map(id=>{const t=byId(id);return`<button class="card" data-act="play" data-id="${t.id}" data-ctx="recent" aria-label="Play ${esc(t.title)}">${cov(t)}<b>${esc(t.title)}</b><small>${esc(t.artist)}</small></button>`}).join("")}</div>`;
+  h+=`<div class="sec"><h2>Starter mixes</h2></div>${rows(DEMOS.map(d=>d.id),"lib")}`;
+  if(userTracks.length)h+=`<div class="sec"><h2>On your phone</h2><button class="link" data-act="tab" data-id="lib">See all</button></div>${rows(userTracks.slice(0,5).map(t=>t.id),"lib")}`;
+  $("#v-home").innerHTML=h;
+}
+function searchHits(){
+  const q=($("#q").value||"").trim().toLowerCase();
+  if(!q)return[];
+  return all().filter(t=>(t.title+" "+t.artist).toLowerCase().includes(q));
+}
+function renderSearch(){
+  const q=($("#q").value||"").trim(),hits=searchHits();
+  let h="";
+  if(!q)h=`<div class="empty"><b>Find a song</b>${CFG.ytKey?"Search your library and YouTube. Press Enter to search YouTube.":"Type a title or artist from your library."}</div>`;
+  else{
+    if(hits.length)h+=`<small>${hits.length} in your library</small>${rows(hits.map(t=>t.id),"search")}`;
+    else if(!CFG.ytKey)h+=`<div class="empty"><b>No match for “${esc(q)}”</b>Check the spelling, or add the song from your phone.<button class="btn ghost" data-act="add">${ic("plus")} Add songs</button></div>`;
+    h+=ytBlock(q);
+  }
+  $("#sres").innerHTML=h;
+}
+function renderLib(){
+  const seg=(k,l)=>`<button role="tab" data-act="seg" data-id="${k}" aria-selected="${libSeg===k}">${l}</button>`;
+  let h=`<div class="brand"><h1>Library</h1></div><div class="seg" role="tablist">${seg("songs","Songs")}${seg("fav","Favorites")}${seg("lists","Playlists")}</div>`;
+  if(libSeg==="songs"){
+    h+=`<div class="btns" style="justify-content:flex-start;margin-bottom:8px"><button class="btn ghost" data-act="add">${ic("plus")} Add songs</button></div>`+rows(all().map(t=>t.id),"lib");
+  }else if(libSeg==="fav"){
+    const f=favs.filter(byId);
+    h+=f.length?rows(f,"fav"):`<div class="empty"><b>No favorites yet</b>Tap the heart on any song to keep it here.</div>`;
+  }else if(openList){
+    const l=lists.find(x=>x.id===openList);
+    if(!l){openList=null;return renderLib()}
+    const ids=l.ids.filter(byId);
+    h+=`<button class="link" data-act="plback">‹ All playlists</button><div class="sec" style="margin-top:6px"><h2>${esc(l.name)}</h2><button class="link" data-act="pldel" data-id="${l.id}">Delete</button></div>`;
+    h+=ids.length?`<div class="btns" style="justify-content:flex-start;margin-bottom:8px"><button class="btn primary" data-act="play" data-id="${ids[0]}" data-ctx="pl:${l.id}">${ic("play")} Play all</button></div>${rows(ids,"pl:"+l.id)}`:`<div class="empty"><b>This playlist is empty</b>Open “More” on any song and choose “Add to playlist”.</div>`;
+  }else{
+    h+=`<div class="btns" style="justify-content:flex-start;margin-bottom:8px"><button class="btn ghost" data-act="newpl">${ic("plus")} New playlist</button></div>`;
+    h+=lists.length?lists.map(l=>`<button class="lrow" data-act="plopen" data-id="${l.id}"><span class="meta"><b>${esc(l.name)}</b><small>${l.ids.filter(byId).length} songs</small></span></button>`).join(""):`<div class="empty"><b>No playlists yet</b>Group songs for the gym, travel, or late nights.</div>`;
+  }
+  $("#v-lib").innerHTML=h;
+}
+function renderMe(){
+  const th=store.get("theme","auto"),ac=store.get("accent","blue");
+  const o=(act,id,l,on)=>`<button class="opt" data-act="${act}" data-id="${id}" aria-pressed="${on}">${l}</button>`;
+  let h=`<div class="brand"><h1>Profile</h1></div>
+  <div class="stats"><div class="stat"><b>${favs.filter(byId).length}</b><small>Favorites</small></div><div class="stat"><b>${played}</b><small>Plays</small></div><div class="stat"><b>${userTracks.length}</b><small>On phone</small></div></div>
+  ${accountRow()}${memRow()}
+  <div class="panelrow"><span>Appearance</span><div class="opts">${o("theme","auto","Auto",th==="auto")}${o("theme","light","Light",th==="light")}${o("theme","dark","Dark",th==="dark")}</div></div>
+  <div class="panelrow"><span>Accent color</span><div class="opts">${o("accent","blue","Blue",ac==="blue")}${o("accent","green","Green",ac==="green")}${o("accent","violet","Violet",ac==="violet")}</div></div>
+  <div class="panelrow"><span>Sleep timer<br><small>${sleepAt?"Stops in about "+Math.max(1,Math.round((sleepAt-Date.now())/60000))+" min":"Off"}</small></span><button class="btn ghost" data-act="sleep">${ic("moon")} Set</button></div>
+  <div class="panelrow"><span>Clear play history</span><button class="btn ghost" data-act="clearhist">Clear</button></div>
+  <div class="panelrow"><span>Reset the app<br><small>Removes saved songs, favorites and playlists.</small></span><button class="btn ghost" data-act="reset">Reset</button></div>`;
+  h+=`<p style="margin-top:22px"><small>BEATNEST v5.3 · Keys: Space play/pause, ← → seek, N next, P previous</small></p>`;
+  $("#v-me").innerHTML=h;
+}
+function renderMini(){
+  const m=$("#mini");
+  if(!cur){m.hidden=true;return}
+  m.hidden=false;
+  m.innerHTML=`<div class="inner"><button class="rowmain" data-act="npopen" aria-label="Open player: ${esc(cur.title)}">${cov(cur)}<span class="meta"><b>${esc(cur.title)}</b><small>${esc(cur.artist)}</small></span></button><button class="play" data-act="toggle" aria-label="${isPaused()?"Play":"Pause"}">${ic(isPaused()?"play":"pause")}</button></div><div class="bar"><i id="mprog"></i></div>`;
+  tick();
+}
+function renderNP(){
+  const n=$("#np");
+  if(!cur){n.innerHTML="";return}
+  const fav=favs.includes(cur.id),i=queue.indexOf(cur.id),next=queue.slice(i+1,i+6);
+  n.innerHTML=`<div class="nptop"><button class="ib" data-act="npclose" aria-label="Close player">${ic("down")}</button><span>Now playing</span><button class="ib" data-act="more" data-id="${cur.id}" aria-label="More options">${ic("more")}</button></div>
+  ${cur.yt?`<div style="height:220px;margin:14px 0 6px"></div>`:`<div style="margin:14px 0 6px">${disc(cur)}</div>`}
+  <div class="npmeta"><div><h2>${esc(cur.title)}</h2><small>${esc(cur.artist)}</small></div><button class="ib" data-act="fav" data-id="${cur.id}" aria-pressed="${fav}" aria-label="${fav?"Remove from favorites":"Add to favorites"}">${ic("heart",fav)}</button></div>
+  <input id="seek" type="range" min="0" max="1000" value="0" aria-label="Seek">
+  <div class="times"><span id="tcur">0:00</span><span id="tdur">0:00</span></div>
+  <div class="ctrls"><button class="ib" data-act="shuffle" aria-pressed="${shuffle}" aria-label="Shuffle">${ic("shuffle")}</button><button class="ib" data-act="prev" aria-label="Previous">${ic("prev")}</button><button class="play" data-act="toggle" aria-label="${isPaused()?"Play":"Pause"}">${ic(isPaused()?"play":"pause")}</button><button class="ib" data-act="next" aria-label="Next">${ic("next")}</button><button class="ib" data-act="repeat" aria-pressed="${repeat>0}" aria-label="Repeat: ${["off","all","one"][repeat]}">${ic(repeat===2?"repeat1":"repeat")}</button></div>
+  <div class="volrow">${ic("vol")}<input id="vol" type="range" min="0" max="100" value="${Math.round(vol*100)}" aria-label="Volume"><button class="ib" data-act="sleep" aria-label="Sleep timer">${ic("moon")}</button></div>
+  ${next.length&&!cur.yt?`<div class="sec"><h2>Up next</h2></div>${rows(next,"queue")}`:""}`;
+  tick();
+}
+function tick(){
+  const d=curDur(),c=curTime();
+  if(!isFinite(d)||!d)return;
+  const p=c/d,mp=$("#mprog");if(mp)mp.style.width=(p*100)+"%";
+  const s=$("#seek");if(s&&!seeking)s.value=p*1000;
+  const tc=$("#tcur"),td=$("#tdur");if(tc)tc.textContent=fmt(c);if(td)td.textContent=fmt(d);
+}
+function render(){
+  document.body.classList.toggle("playing",!!cur&&!isPaused());syncYT();
+  renderHome();renderSearch();renderLib();renderMe();renderMini();renderNP();
+  ["home","search","lib","me"].forEach(k=>{$("#v-"+k).hidden=tab!==k});
+  document.querySelectorAll("nav button").forEach((b,i)=>{
+    const k=b.dataset.id;b.innerHTML=ic({home:"home",search:"search",lib:"lib",me:"user"}[k])+`<span>${{home:"Home",search:"Search",lib:"Library",me:"Profile"}[k]}</span>`;
+    if(k===tab)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current");
+  });
+  $("#sic").innerHTML=ic("search");
+}
+function toast(m){const t=$("#toast");t.textContent=m;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,2600)}
+function sheet(html){const s=$("#sheet");s.innerHTML=`<div class="scrim" data-act="close"></div><div class="panel" role="dialog" aria-modal="true">${html}</div>`;s.hidden=false;const f=s.querySelector("input,button.lrow,.btn");if(f)f.focus()}
+function closeSheet(){const s=$("#sheet");s.hidden=true;s.innerHTML=""}
+
+/* ---------- actions ---------- */
+function setTheme(v){store.set("theme",v);const r=document.documentElement;v==="auto"?r.removeAttribute("data-theme"):r.setAttribute("data-theme",v)}
+function setAccent(v){store.set("accent",v);const r=document.documentElement;v==="blue"?r.removeAttribute("data-accent"):r.setAttribute("data-accent",v)}
+function setSleep(min){
+  clearTimeout(sleepTimer);sleepAt=0;
+  if(min){sleepAt=Date.now()+min*60000;sleepTimer=setTimeout(()=>{doPause();sleepAt=0;toast("Sleep timer ended");render()},min*60000);toast("Music will stop in "+min+" min")}
+  else toast("Sleep timer off");
+  closeSheet();renderMe();
+}
+function addToList(listId,songId){
+  const l=lists.find(x=>x.id===listId);if(!l)return;saveYT(songId);
+  if(!l.ids.includes(songId))l.ids.push(songId);
+  store.set("lists",lists);toast("Added to "+l.name);closeSheet();render();
+}
+async function addFiles(fl){
+  let n=0;
+  for(const f of fl){
+    if(!(f.type||"").startsWith("audio/")&&!/\.(mp3|m4a|wav|ogg|aac|flac)$/i.test(f.name))continue;
+    const t={id:"u-"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),title:f.name.replace(/\.[^.]+$/,"").replace(/[_]+/g," ").trim()||"Untitled",artist:"On this phone",blob:f};
+    userTracks.push(t);await tx("readwrite",s=>s.put(t));n++;
+  }
+  try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+  toast(n?`Added ${n} ${n===1?"song":"songs"}`:"Choose audio files like MP3 or M4A");render();
+}
+async function removeTrack(id){
+  userTracks=userTracks.filter(t=>t.id!==id);await tx("readwrite",s=>s.delete(id));
+  favs=favs.filter(x=>x!==id);recents=recents.filter(x=>x!==id);lists.forEach(l=>l.ids=l.ids.filter(x=>x!==id));
+  store.set("favs",favs);store.set("recents",recents);store.set("lists",lists);
+  if(cur&&cur.id===id){doPause();A.pause();A.removeAttribute("src");cur=null;setNP(false)}
+  closeSheet();toast("Removed from this phone");render();
+}
+async function resetAll(){
+  doPause();A.pause();A.removeAttribute("src");cur=null;queue=[];userTracks=[];favs=[];recents=[];lists=[];played=0;
+  await tx("readwrite",s=>s.clear());store.wipe();store.set("vip",vip);store.set("used",usedCodes);store.set("day",dayPlays);setTheme("auto");setAccent("blue");
+  setNP(false);closeSheet();toast("BEATNEST was reset");render();cloudSched();
+}
+
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-act]");if(!b)return;
+  const a=b.dataset.act,id=b.dataset.id;
+  switch(a){
+    case"tab":tab=id;if(id==="lib"&&libSeg!=="lists")openList=null;render();$("#main").scrollTop=0;if(id==="search")$("#q").focus();break;
+    case"play":playTrack(id,b.dataset.ctx);break;
+    case"toggle":toggle();break;
+    case"next":step(1);break;
+    case"prev":step(-1);break;
+    case"shuffle":shuffle=!shuffle;store.set("shuffle",shuffle);renderNP();break;
+    case"repeat":repeat=(repeat+1)%3;store.set("repeat",repeat);renderNP();break;
+    case"fav":saveYT(id);favs=favs.includes(id)?favs.filter(x=>x!==id):favs.concat(id);store.set("favs",favs);render();break;
+    case"npopen":if(cur){setNP(true);$("#np .ib")&&$("#np .ib").focus()}break;
+    case"npclose":setNP(false);break;
+    case"add":$("#files").click();break;
+    case"seg":libSeg=id;openList=null;renderLib();break;
+    case"plopen":openList=id;renderLib();break;
+    case"plback":openList=null;renderLib();break;
+    case"newpl":sheet(`<h3>New playlist</h3><input class="field" id="plname" maxlength="40" placeholder="Playlist name" aria-label="Playlist name"><div class="btns"><button class="btn ghost" data-act="close">Cancel</button><button class="btn primary" data-act="plcreate" data-id="${id||""}">Create playlist</button></div>`);break;
+    case"plcreate":{const n=($("#plname").value||"").trim();if(!n){toast("Give the playlist a name");return}
+      const l={id:"l-"+Date.now().toString(36),name:n,ids:[]};lists.push(l);store.set("lists",lists);
+      if(id)addToList(l.id,id);else{closeSheet();libSeg="lists";openList=null;render()}break}
+    case"pldel":lists=lists.filter(x=>x.id!==id);store.set("lists",lists);openList=null;toast("Playlist deleted");render();break;
+    case"more":{const t=byId(id);if(!t)return;
+      sheet(`<h3>${esc(t.title)}</h3><p>${esc(t.artist)}</p>
+      <button class="lrow" data-act="addpl" data-id="${id}">Add to playlist</button>
+      <button class="lrow" data-act="playnext" data-id="${id}">Play next</button>
+      ${t.demo||t.yt?"":`<button class="lrow" data-act="rm" data-id="${id}" style="color:#C8372D">Remove from this phone</button>`}`);break}
+    case"addpl":sheet(`<h3>Add to playlist</h3>${lists.map(l=>`<button class="lrow" data-act="addto" data-id="${l.id}" data-song="${id}">${esc(l.name)}</button>`).join("")}<button class="lrow" data-act="newpl" data-id="${id}">${ic("plus")} New playlist</button>`);break;
+    case"addto":addToList(id,b.dataset.song);break;
+    case"playnext":{if(!queue.length){playTrack(id,"lib")}else{queue=queue.filter(x=>x!==id);const i=queue.indexOf(cur&&cur.id);queue.splice(i+1,0,id);toast("Playing next");renderNP()}closeSheet();break}
+    case"rm":removeTrack(id);break;
+    case"sleep":sheet(`<h3>Sleep timer</h3>${[15,30,45,60].map(m=>`<button class="lrow" data-act="setsleep" data-id="${m}">Stop after ${m} minutes</button>`).join("")}<button class="lrow" data-act="setsleep" data-id="0">Turn off</button>`);break;
+    case"setsleep":setSleep(+id);break;
+    case"theme":setTheme(id);renderMe();break;
+    case"accent":setAccent(id);renderMe();break;
+    case"clearhist":recents=[];store.set("recents",recents);toast("History cleared");render();break;
+    case"reset":sheet(`<h3>Reset BEATNEST?</h3><p>This removes songs saved in the app, favorites, playlists and settings. Files on your phone are not touched, and your VIP membership stays.</p><div class="btns"><button class="btn ghost" data-act="close">Keep my data</button><button class="btn danger" data-act="resetgo">Reset everything</button></div>`);break;
+    case"resetgo":resetAll();break;
+    case"signin":fbSignIn();break;
+    case"signout":fbSignOut();break;
+    case"ytsearch":ytSearch();break;
+    case"vip":vipSheet(false);break;
+    case"copyupi":try{navigator.clipboard.writeText(CFG.upiId).then(()=>toast("UPI ID copied"),()=>toast("UPI ID: "+CFG.upiId))}catch(e){toast("UPI ID: "+CFG.upiId)}break;
+    case"activate":{const c=($("#vipcode").value||"").trim().toUpperCase().replace(/\s+/g,"");if(!c){toast("Enter your VIP code");return}activate(c);break}
+    case"close":closeSheet();break;
+  }
+});
+document.addEventListener("input",e=>{
+  if(e.target.id==="seek"){seeking=true;{const d=curDur();if(isFinite(d)&&d)seekTo(e.target.value/1000*d)}}
+  else if(e.target.id==="vol"){vol=e.target.value/100;A.volume=vol;if(ytp&&ytReady)ytp.setVolume(vol*100);store.set("vol",vol)}
+  else if(e.target.id==="q"){clearTimeout(renderSearch.t);renderSearch.t=setTimeout(renderSearch,150)}
+});
+document.addEventListener("change",e=>{if(e.target.id==="seek")seeking=false});
+$("#files").addEventListener("change",e=>{addFiles([...e.target.files]);e.target.value=""});
+document.addEventListener("keydown",e=>{
+  const tag=(e.target.tagName||"").toLowerCase();
+  if(e.key==="Enter"&&e.target.id==="q"){e.preventDefault();ytSearch();return}
+  if(e.key==="Escape"){if(!$("#sheet").hidden)closeSheet();else setNP(false);return}
+  if(tag==="input"||tag==="textarea"||e.target.closest("button")&&e.key===" ")return;
+  if(e.key===" "){e.preventDefault();toggle()}
+  else if(e.key==="ArrowRight"&&cur)seekTo(Math.min(curDur()||0,curTime()+10));
+  else if(e.key==="ArrowLeft"&&cur)seekTo(Math.max(0,curTime()-10));
+  else if(e.key.toLowerCase()==="n")step(1);
+  else if(e.key.toLowerCase()==="p")step(-1);
+});
+A.addEventListener("timeupdate",tick);
+A.addEventListener("loadedmetadata",tick);
+A.addEventListener("play",render);
+A.addEventListener("pause",render);
+A.addEventListener("ended",()=>step(1,true));
+A.addEventListener("error",()=>{if(cur&&A.src)toast("This file won't play. Try another MP3.")});
+
+/* ---------- start ---------- */
+(async()=>{
+  setTheme(store.get("theme","auto"));setAccent(store.get("accent","blue"));
+  db=await openDB();
+  const saved=await tx("readonly",s=>s.getAll());
+  userTracks=Array.isArray(saved)?saved:[];
+  favs=favs.filter(byId);
+  render();
+  fbInit();
+})();
+})();
+</script>
+</body>
+</html>
