@@ -184,7 +184,8 @@ const CFG={
     appId:"1:346732395794:web:8c6840b04ef89cd67347cb",
     measurementId:"G-XNN3R6CWY8"
   },
-  ytKey:"AIzaSyDX7-9ciPbg_lC3x7mFsneGb1dzT8gI9fU", // <<< PASTE YOUR YOUTUBE API KEY BETWEEN THE TWO QUOTES "" ON THIS LINE
+  ytKey:"AIzaSyDX7-9ciPbg_lC3x7mFsneGb1dzT8gI9fU", // YouTube Data API key
+  jamendoId:"", // <<< PASTE YOUR JAMENDO CLIENT ID BETWEEN THE TWO QUOTES "" ON THIS LINE
   supportEmail:"support@beatnest.app",
   // SHA-256 hash of your VIP code (the code itself is not in this file)
   vipHashes:["910f6e8e7be8aeb9862fc602768cbcef8fb438592bc96d0be978398474c6d2da"]
@@ -261,7 +262,7 @@ function synth(d){
 
 /* ---------- state ---------- */
 let userTracks=[];
-let ytSaved=store.get("yts",{}),ytMap=Object.assign({},ytSaved),ytState={q:"",ids:[],loading:false},ytCache={};
+let ytSaved=store.get("yts",{}),ytMap=Object.assign({},ytSaved),ytState={q:"",ids:[],loading:false},ytCache={},jmState={q:"",ids:[],loading:false},jmCache={};
 let favs=store.get("favs",[]),recents=store.get("recents",[]),lists=store.get("lists",[]),played=store.get("played",0);
 let shuffle=store.get("shuffle",false),repeat=store.get("repeat",0),vol=store.get("vol",1);
 let tab="home",libSeg="songs",openList=null,queue=[],cur=null,sleepTimer=null,sleepAt=0,seeking=false;
@@ -308,6 +309,7 @@ async function activate(code){
 }
 
 async function urlFor(t){
+  if(t.jm)return t.url;
   if(t.demo){return demoUrl[t.id]||(demoUrl[t.id]=URL.createObjectURL(synth(t.demo)))}
   if(userUrl)URL.revokeObjectURL(userUrl);
   userUrl=URL.createObjectURL(t.blob);return userUrl;
@@ -317,24 +319,25 @@ function listFor(ctx){
   if(ctx==="recent")return recents.filter(byId);
   if(ctx.startsWith("pl:")){const l=lists.find(x=>x.id===ctx.slice(3));return l?l.ids.filter(byId):[]}
   if(ctx==="yt")return ytState.ids.filter(byId);
+  if(ctx==="jm")return jmState.ids.filter(byId);
   if(ctx==="search")return searchHits().map(t=>t.id);
   return all().map(t=>t.id);
 }
 async function playTrack(id,ctx){
   const t=byId(id);if(!t)return;
-  if(!t.demo&&!t.yt&&!isVip()&&freeLeft()<=0){vipSheet(true);return}
+  if(!t.demo&&!t.yt&&!t.jm&&!isVip()&&freeLeft()<=0){vipSheet(true);return}
   if(ctx&&ctx!=="queue")queue=listFor(ctx);
   if(!queue.includes(id))queue=[id];
   cur=t;
   try{
     if(t.yt){A.pause();A.removeAttribute("src");saveYT(t.id);setNP(true);await loadYT(t.yt)}
-    else{if(ytp&&ytReady){try{ytp.pauseVideo()}catch(e){}}A.src=await urlFor(t);await A.play();syncYT()}
+    else{if(ytp&&ytReady){try{ytp.pauseVideo()}catch(e){}}A.src=await urlFor(t);await A.play();if(t.jm)saveYT(t.id);syncYT()}
   }
   catch(e){toast("This file won't play. Try another MP3.");render();return}
   recents=[id].concat(recents.filter(x=>x!==id)).slice(0,20);store.set("recents",recents);
   played++;store.set("played",played);
-  track("play_track",{source:t.yt?"youtube":t.demo?"starter":"local"});
-  if(!t.demo&&!t.yt&&!isVip()){dayPlays={d:today(),n:(dayPlays.d===today()?dayPlays.n:0)+1};store.set("day",dayPlays)}
+  track("play_track",{source:t.yt?"youtube":t.jm?"jamendo":t.demo?"starter":"local"});
+  if(!t.demo&&!t.yt&&!t.jm&&!isVip()){dayPlays={d:today(),n:(dayPlays.d===today()?dayPlays.n:0)+1};store.set("day",dayPlays)}
   meta();render();
 }
 function step(dir,auto){
@@ -486,9 +489,43 @@ function accountHint(){
   return fbUser?`<p><small>Signed in as ${esc(fbUser.email||"your account")}. Use this email when you send your payment screenshot and VIP turns on for your account.</small></p>`:`<div class="btns" style="justify-content:flex-start;margin-bottom:10px"><button class="btn ghost" data-act="signin">Sign in with Google first</button></div>`;
 }
 
+function saveBlob(b,name){const u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)}
+async function jmSearch(){
+  const q=($("#q").value||"").trim();
+  if(!q||!CFG.jamendoId)return;
+  if(jmCache[q]){jmState={q,ids:jmCache[q],loading:false};renderSearch();return}
+  jmState={q,ids:[],loading:true};renderSearch();
+  try{
+    const u="https://api.jamendo.com/v3.0/tracks/?client_id="+encodeURIComponent(CFG.jamendoId)+"&format=json&limit=15&audioformat=mp32&search="+encodeURIComponent(q);
+    const r=await fetch(u),j=await r.json();
+    if(!r.ok||(j.headers&&j.headers.status==="failed"))throw new Error((j.headers&&j.headers.error_message)||"Search failed");
+    const ids=[];
+    (j.results||[]).forEach(it=>{if(!it.audio)return;const t={id:"jm-"+it.id,jm:true,url:it.audio,dl:(it.audiodownload_allowed&&it.audiodownload)?it.audiodownload:"",title:it.name||"Untitled",artist:it.artist_name||"Jamendo artist"};ytMap[t.id]=t;ids.push(t.id)});
+    jmCache[q]=ids;jmState={q,ids,loading:false};track("jamendo_search");
+  }catch(e){
+    const m=String(e.message||e);
+    jmState={q,ids:[],loading:false,err:/client/i.test(m)?"The Jamendo Client ID was rejected: "+m:/fetch|network/i.test(m)?"Couldn't reach Jamendo. Check your internet.":m};
+  }
+  renderSearch();
+}
+function jmBlock(q){
+  if(!CFG.jamendoId)return"";
+  const st=jmState,b=`<div class="sec"><h2>Free music</h2></div><small>From Jamendo. Many songs can be downloaded.</small>`;
+  if(st.q!==q)return b+`<div style="margin-top:8px"><button class="btn primary" data-act="jmsearch">Search free music for \u201c${esc(q)}\u201d</button></div>`;
+  if(st.loading)return b+`<div class="empty"><b>Searching free music</b></div>`;
+  if(st.err)return b+`<div class="empty"><b>Free music search didn't work</b>${esc(st.err)}<button class="btn ghost" data-act="jmsearch">Try again</button></div>`;
+  return b+(st.ids.length?rows(st.ids,"jm"):`<div class="empty"><b>No free songs found</b>Try a different spelling or the artist name.</div>`);
+}
 async function downloadTrack(id){
   const t=byId(id);
   if(!t||t.yt){toast("YouTube songs can't be downloaded.");return}
+  if(t.jm){
+    const nm=((t.title||"song").replace(/[\\/:*?"<>|]+/g," ").trim()||"song")+".mp3";
+    if(!t.dl){toast("Downloads aren't allowed for this song.");return}
+    try{const r=await fetch(t.dl);if(!r.ok)throw new Error("x");saveBlob(await r.blob(),nm);toast("Downloading "+nm)}
+    catch(e){window.open(t.dl,"_blank","noopener");toast("Opening the download link")}
+    track("download_song",{source:"jamendo"});return;
+  }
   try{
     const blob=t.demo?synth(t.demo):t.blob;
     if(!blob){toast("This song isn't available to download.");return}
@@ -514,7 +551,7 @@ if("mediaSession" in navigator){
 /* ---------- rendering ---------- */
 function row(t,ctx){
   const fav=favs.includes(t.id),on=cur&&cur.id===t.id;
-  return`<div class="row${on?" on":""}"><button class="rowmain" data-act="play" data-id="${t.id}" data-ctx="${ctx}" aria-label="Play ${esc(t.title)} by ${esc(t.artist)}">${cov(t)}<span class="meta"><b>${esc(t.title)}</b><small>${esc(t.artist)}</small></span>${on&&!isPaused()?'<span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>':""}</button><button class="ib" data-act="fav" data-id="${t.id}" aria-pressed="${fav}" aria-label="${fav?"Remove from favorites":"Add to favorites"}">${ic("heart",fav)}</button><button class="ib" data-act="more" data-id="${t.id}" aria-label="More options for ${esc(t.title)}">${ic("more")}</button></div>`;
+  return`<div class="row${on?" on":""}"><button class="rowmain" data-act="play" data-id="${t.id}" data-ctx="${ctx}" aria-label="Play ${esc(t.title)} by ${esc(t.artist)}">${cov(t)}<span class="meta"><b>${esc(t.title)}</b><small>${esc(t.artist)}</small></span>${on&&!isPaused()?'<span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>':""}</button><button class="ib" data-act="fav" data-id="${t.id}" aria-pressed="${fav}" aria-label="${fav?"Remove from favorites":"Add to favorites"}">${ic("heart",fav)}</button>${(!t.yt&&!(t.jm&&!t.dl))?`<button class="ib" data-act="dl" data-id="${t.id}" aria-label="Download ${esc(t.title)}">${ic("download")}</button>`:""}<button class="ib" data-act="more" data-id="${t.id}" aria-label="More options for ${esc(t.title)}">${ic("more")}</button></div>`;
 }
 const rows=(ids,ctx)=>ids.map(byId).filter(Boolean).map(t=>row(t,ctx)).join("");
 const disc=t=>`<div class="disc" aria-hidden="true"><div class="lbl" style="${t?covStyle(t):"background:var(--accent)"}">${t?esc(t.title.trim().charAt(0).toUpperCase()):"B"}</div></div>`;
@@ -525,7 +562,7 @@ function renderHome(){
   if(cur){
     h+=`<div class="hero">${disc(cur)}<h2>${esc(cur.title)}</h2><p>${esc(cur.artist)}</p><div class="btns"><button class="btn primary" data-act="npopen">Open player</button></div></div>`;
   }else{
-    h+=`<div class="hero">${disc()}<h2>Your music, even without internet</h2><p>Add MP3 files from your phone. They stay saved in this app.</p><div class="btns"><button class="btn primary" data-act="add">${ic("plus")} Add songs</button><button class="btn ghost" data-act="play" data-id="demo-1" data-ctx="lib">Play a starter mix</button>${CFG.ytKey?`<button class="btn ghost" data-act="tab" data-id="search">Search YouTube</button>`:""}</div></div>`;
+    h+=`<div class="hero">${disc()}<h2>Your music, even without internet</h2><p>Add MP3 files from your phone. They stay saved in this app.</p><div class="btns"><button class="btn primary" data-act="add">${ic("plus")} Add songs</button><button class="btn ghost" data-act="play" data-id="demo-1" data-ctx="lib">Play a starter mix</button>${(CFG.ytKey||CFG.jamendoId)?`<button class="btn ghost" data-act="tab" data-id="search">Search online</button>`:""}</div></div>`;
   }
   h+=vipCard();
   if(rec.length)h+=`<div class="sec"><h2>Play again</h2><button class="link" data-act="clearhist">Clear</button></div><div class="shelf">${rec.slice(0,10).map(id=>{const t=byId(id);return`<button class="card" data-act="play" data-id="${t.id}" data-ctx="recent" aria-label="Play ${esc(t.title)}">${cov(t)}<b>${esc(t.title)}</b><small>${esc(t.artist)}</small></button>`}).join("")}</div>`;
@@ -541,11 +578,11 @@ function searchHits(){
 function renderSearch(){
   const q=($("#q").value||"").trim(),hits=searchHits();
   let h="";
-  if(!q)h=`<div class="empty"><b>Find a song</b>${CFG.ytKey?"Search your library and YouTube. Press Enter to search YouTube.":"Type a title or artist from your library."}</div>`;
+  if(!q)h=`<div class="empty"><b>Find a song</b>${(CFG.ytKey||CFG.jamendoId)?"Search your library, free music and YouTube. Press Enter to search online.":"Type a title or artist from your library."}</div>`;
   else{
     if(hits.length)h+=`<small>${hits.length} in your library</small>${rows(hits.map(t=>t.id),"search")}`;
-    else if(!CFG.ytKey)h+=`<div class="empty"><b>No match for “${esc(q)}”</b>Check the spelling, or add the song from your phone.<button class="btn ghost" data-act="add">${ic("plus")} Add songs</button></div>`;
-    h+=ytBlock(q);
+    else if(!CFG.ytKey&&!CFG.jamendoId)h+=`<div class="empty"><b>No match for “${esc(q)}”</b>Check the spelling, or add the song from your phone.<button class="btn ghost" data-act="add">${ic("plus")} Add songs</button></div>`;
+    h+=jmBlock(q);h+=ytBlock(q);
   }
   $("#sres").innerHTML=h;
 }
@@ -580,7 +617,7 @@ function renderMe(){
   <div class="panelrow"><span>Sleep timer<br><small>${sleepAt?"Stops in about "+Math.max(1,Math.round((sleepAt-Date.now())/60000))+" min":"Off"}</small></span><button class="btn ghost" data-act="sleep">${ic("moon")} Set</button></div>
   <div class="panelrow"><span>Clear play history</span><button class="btn ghost" data-act="clearhist">Clear</button></div>
   <div class="panelrow"><span>Reset the app<br><small>Removes saved songs, favorites and playlists.</small></span><button class="btn ghost" data-act="reset">Reset</button></div>`;
-  h+=`<p style="margin-top:22px"><small>BEATNEST v5.3 · Keys: Space play/pause, ← → seek, N next, P previous</small></p>`;
+  h+=`<p style="margin-top:22px"><small>BEATNEST v5.4 · Keys: Space play/pause, ← → seek, N next, P previous</small></p>`;
   $("#v-me").innerHTML=h;
 }
 function renderMini(){
@@ -689,8 +726,8 @@ document.addEventListener("click",e=>{
       sheet(`<h3>${esc(t.title)}</h3><p>${esc(t.artist)}</p>
       <button class="lrow" data-act="addpl" data-id="${id}">Add to playlist</button>
       <button class="lrow" data-act="playnext" data-id="${id}">Play next</button>
-      ${t.yt?`<div class="lrow" style="color:var(--muted)">YouTube songs can't be downloaded</div>`:`<button class="lrow" data-act="dl" data-id="${id}">Download</button>`}
-      ${t.demo||t.yt?"":`<button class="lrow" data-act="rm" data-id="${id}" style="color:#C8372D">Remove from this phone</button>`}`);break}
+      ${t.yt?`<div class="lrow" style="color:var(--muted)">YouTube songs can't be downloaded</div>`:(t.jm&&!t.dl)?`<div class="lrow" style="color:var(--muted)">The artist doesn't allow downloads for this song</div>`:`<button class="lrow" data-act="dl" data-id="${id}">Download</button>`}
+      ${t.demo||t.yt||t.jm?"":`<button class="lrow" data-act="rm" data-id="${id}" style="color:#C8372D">Remove from this phone</button>`}`);break}
     case"addpl":sheet(`<h3>Add to playlist</h3>${lists.map(l=>`<button class="lrow" data-act="addto" data-id="${l.id}" data-song="${id}">${esc(l.name)}</button>`).join("")}<button class="lrow" data-act="newpl" data-id="${id}">${ic("plus")} New playlist</button>`);break;
     case"addto":addToList(id,b.dataset.song);break;
     case"playnext":{if(!queue.length){playTrack(id,"lib")}else{queue=queue.filter(x=>x!==id);const i=queue.indexOf(cur&&cur.id);queue.splice(i+1,0,id);toast("Playing next");renderNP()}closeSheet();break}
@@ -706,6 +743,7 @@ document.addEventListener("click",e=>{
     case"signin":fbSignIn();break;
     case"signout":fbSignOut();break;
     case"ytsearch":ytSearch();break;
+    case"jmsearch":jmSearch();break;
     case"vip":vipSheet(false);break;
     case"copyupi":try{navigator.clipboard.writeText(CFG.upiId).then(()=>toast("UPI ID copied"),()=>toast("UPI ID: "+CFG.upiId))}catch(e){toast("UPI ID: "+CFG.upiId)}break;
     case"activate":{const c=($("#vipcode").value||"").trim().toUpperCase().replace(/\s+/g,"");if(!c){toast("Enter your VIP code");return}activate(c);break}
@@ -721,7 +759,7 @@ document.addEventListener("change",e=>{if(e.target.id==="seek")seeking=false});
 $("#files").addEventListener("change",e=>{addFiles([...e.target.files]);e.target.value=""});
 document.addEventListener("keydown",e=>{
   const tag=(e.target.tagName||"").toLowerCase();
-  if(e.key==="Enter"&&e.target.id==="q"){e.preventDefault();ytSearch();return}
+  if(e.key==="Enter"&&e.target.id==="q"){e.preventDefault();ytSearch();jmSearch();return}
   if(e.key==="Escape"){if(!$("#sheet").hidden)closeSheet();else setNP(false);return}
   if(tag==="input"||tag==="textarea"||e.target.closest("button")&&e.key===" ")return;
   if(e.key===" "){e.preventDefault();toggle()}
