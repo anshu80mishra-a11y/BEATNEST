@@ -39,6 +39,7 @@ main{flex:1;overflow-y:auto;padding:18px 18px 200px;-webkit-overflow-scrolling:t
 .sec h2{font-size:19px;font-weight:600}
 .link{color:var(--accent);font-weight:700;padding:6px 4px}
 
+/* the one bold element: the record */
 .hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;padding:8px 0 4px}
 .hero h2{font-size:clamp(28px,8vw,38px);font-weight:800;line-height:1.05;max-width:14ch}
 .hero p{margin:0;color:var(--muted);max-width:34ch}
@@ -172,9 +173,9 @@ const CFG={
   price:29,            // VIP price per month (₹)
   vipDays:30,          // days of VIP each code gives
   freePlays:10,        // free plays per day for songs you add (starter mixes are always free)
-  upiId:"himanshu120mishra@gmail.com",
+  upiId:"himanshu120mishra@gmail.com", // payee UPI ID, copied from your old BEATNEST page: please check it
   upiName:"BEATNEST",
-  firebase:{
+  firebase:{ // Firebase web config (safe to be public; real protection is Firestore rules)
     apiKey:"AIzaSyBfZ5QsR6JQ5RTNX1NiIIVuMJ5GC1m7JgE",
     authDomain:"exmmusic.firebaseapp.com",
     projectId:"exmmusic",
@@ -183,8 +184,9 @@ const CFG={
     appId:"1:346732395794:web:8c6840b04ef89cd67347cb",
     measurementId:"G-XNN3R6CWY8"
   },
-  ytKey:"AIzaSyDX7-9ciPbg_lC3x7mFsneGb1dzT8gI9fU", // Updated YouTube API Key
+  ytKey:"AIzaSyDX7-9ciPbg_lC3x7mFsneGb1dzT8gI9fU", // <<< PASTE YOUR YOUTUBE API KEY BETWEEN THE TWO QUOTES "" ON THIS LINE
   supportEmail:"support@beatnest.app",
+  // SHA-256 hash of your VIP code (the code itself is not in this file)
   vipHashes:["910f6e8e7be8aeb9862fc602768cbcef8fb438592bc96d0be978398474c6d2da"]
 };
 const DEMOS=[
@@ -214,14 +216,15 @@ const IC={
  heart:'<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>',
  search:'<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
  home:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
- lib:'<path d="M9 18V5l12-2v13"/><circle cx="6" border="0" r="3"/><circle cx="18" cy="16" r="3"/>',
+ lib:'<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
  user:'<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
  moon:'<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
  plus:'<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
  more:'<circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/>',
  down:'<polyline points="6 9 12 15 18 9"/>',
  vol:'<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>',
- crown:'<path d="M2 20h20"/><path d="M4 17L3 7l5 4 4-7 4 7 5-4-1 10z"/>'
+ crown:'<path d="M2 20h20"/><path d="M4 17L3 7l5 4 4-7 4 7 5-4-1 10z"/>',
+ download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>'
 };
 const FILLED=new Set(["play","pause","next","prev"]);
 const ic=(n,f)=>`<svg class="i${f||FILLED.has(n)?" f":""}" viewBox="0 0 24 24" aria-hidden="true">${IC[n]}</svg>`;
@@ -234,7 +237,7 @@ let db=null;
 const openDB=()=>new Promise(res=>{try{const r=indexedDB.open("beatnest",1);r.onupgradeneeded=()=>r.result.createObjectStore("tracks",{keyPath:"id"});r.onsuccess=()=>res(r.result);r.onerror=()=>res(null)}catch(e){res(null)}});
 const tx=(mode,fn)=>new Promise(res=>{if(!db)return res(null);try{const t=db.transaction("tracks",mode),q=fn(t.objectStore("tracks"));t.oncomplete=()=>res(q&&q.result);t.onerror=()=>res(null);t.onabort=()=>res(null)}catch(e){res(null)}});
 
-/* ---------- demo synth ---------- */
+/* ---------- demo synth: tiny browser-made songs so the app is never empty ---------- */
 function synth(d){
   const sr=22050,secs=28,n=sr*secs,pcm=new Int16Array(n),beat=60/d.bpm,sc=d.scale,TAU=Math.PI*2;
   const osc=(ph,w)=>{const p=ph-Math.floor(ph);return w==="saw"?2*p-1:w==="square"?(p<.5?.5:-.5):Math.sin(TAU*p)};
@@ -395,7 +398,7 @@ async function ytSearch(){
     ytCache[q]=ids;ytState={q,ids,loading:false};
   }catch(e){
     const m=String(e.message||e);
-    ytState={q,ids:[],loading:false,err:/quota/i.test(m)?"YouTube's daily search limit is used up. Try again tomorrow.":/referer|referrer|not valid|key/i.test(m)?"The YouTube key was rejected: "+m:/fetch|network/i.test(m)?"Couldn't reach YouTube. Check your internet.":m};
+    ytState={q,ids:[],loading:false,err:/quota/i.test(m)?"YouTube's daily search limit is used up. Try again tomorrow.":/referer|referrer|not valid|key/i.test(m)?"The YouTube key was rejected (key ends "+CFG.ytKey.slice(-4)+"): "+m:/fetch|network/i.test(m)?"Couldn't reach YouTube. Check your internet.":m};
   }
   renderSearch();
 }
@@ -408,7 +411,7 @@ function ytBlock(q){
   return b+(st.ids.length?rows(st.ids,"yt"):`<div class="empty"><b>No videos found</b>Try a different spelling or the artist name.</div>`);
 }
 
-/* ---------- Firebase ---------- */
+/* ---------- Firebase: Google sign-in, cloud sync, VIP from account, analytics ---------- */
 let fb=null,fbUser=null,fbUnsub=null,syncT=null,firstSnap=true;
 function cloudKey(k){return["favs","lists","recents","played","yts"].includes(k)}
 function track(n,p){try{if(fb&&fb.an)fb.logEvent(fb.an,n,p||{})}catch(e){}}
@@ -472,8 +475,7 @@ async function fbSignIn(){
     toast(c==="auth/popup-closed-by-user"||c==="auth/cancelled-popup-request"?"Sign-in was cancelled.":c==="auth/unauthorized-domain"?"Add this site under Authorized domains in Firebase.":c==="auth/popup-blocked"?"Allow pop-ups for this site, then try again.":"Couldn't sign in. Try again.");
   }
 }
-async function fbSignOut(){try{await fb.au.signOut(fb.auth);toast("Signed out")}catch(e){}
-}
+async function fbSignOut(){try{await fb.au.signOut(fb.auth);toast("Signed out")}catch(e){}}
 function accountRow(){
   if(!CFG.firebase)return"";
   if(fbUser)return`<div class="panelrow"><span>${esc(fbUser.displayName||"Signed in")}<br><small>${esc(fbUser.email||"")}</small></span><button class="btn ghost" data-act="signout">Sign out</button></div>`;
@@ -484,7 +486,21 @@ function accountHint(){
   return fbUser?`<p><small>Signed in as ${esc(fbUser.email||"your account")}. Use this email when you send your payment screenshot and VIP turns on for your account.</small></p>`:`<div class="btns" style="justify-content:flex-start;margin-bottom:10px"><button class="btn ghost" data-act="signin">Sign in with Google first</button></div>`;
 }
 
-/* ---------- media session ---------- */
+async function downloadTrack(id){
+  const t=byId(id);
+  if(!t||t.yt){toast("YouTube songs can't be downloaded.");return}
+  try{
+    const blob=t.demo?synth(t.demo):t.blob;
+    if(!blob){toast("This song isn't available to download.");return}
+    const safe=(t.title||"song").replace(/[\\/:*?"<>|]+/g," ").trim()||"song";
+    const name=t.demo?safe+".wav":(blob.name||safe+"."+((blob.type.split("/")[1]||"mp3").replace("mpeg","mp3").replace("x-m4a","m4a").replace("mp4","m4a")));
+    const u=URL.createObjectURL(blob),a=document.createElement("a");
+    a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(u),4000);
+    toast("Downloading "+name);track("download_song",{source:t.demo?"starter":"local"});
+  }catch(e){toast("Couldn't download this song.")}
+}
+/* ---------- media session (lock screen, headphones) ---------- */
 function meta(){
   if(!("mediaSession" in navigator)||!cur)return;
   try{navigator.mediaSession.metadata=new MediaMetadata({title:cur.title,artist:cur.artist,album:"BEATNEST"})}catch(e){}
@@ -584,7 +600,7 @@ function renderNP(){
   <input id="seek" type="range" min="0" max="1000" value="0" aria-label="Seek">
   <div class="times"><span id="tcur">0:00</span><span id="tdur">0:00</span></div>
   <div class="ctrls"><button class="ib" data-act="shuffle" aria-pressed="${shuffle}" aria-label="Shuffle">${ic("shuffle")}</button><button class="ib" data-act="prev" aria-label="Previous">${ic("prev")}</button><button class="play" data-act="toggle" aria-label="${isPaused()?"Play":"Pause"}">${ic(isPaused()?"play":"pause")}</button><button class="ib" data-act="next" aria-label="Next">${ic("next")}</button><button class="ib" data-act="repeat" aria-pressed="${repeat>0}" aria-label="Repeat: ${["off","all","one"][repeat]}">${ic(repeat===2?"repeat1":"repeat")}</button></div>
-  <div class="volrow">${ic("vol")}<input id="vol" type="range" min="0" max="100" value="${Math.round(vol*100)}" aria-label="Volume"><button class="ib" data-act="sleep" aria-label="Sleep timer">${ic("moon")}</button></div>
+  <div class="volrow">${ic("vol")}<input id="vol" type="range" min="0" max="100" value="${Math.round(vol*100)}" aria-label="Volume">${cur.yt?"":`<button class="ib" data-act="dl" data-id="${cur.id}" aria-label="Download this song">${ic("download")}</button>`}<button class="ib" data-act="sleep" aria-label="Sleep timer">${ic("moon")}</button></div>
   ${next.length&&!cur.yt?`<div class="sec"><h2>Up next</h2></div>${rows(next,"queue")}`:""}`;
   tick();
 }
@@ -673,6 +689,7 @@ document.addEventListener("click",e=>{
       sheet(`<h3>${esc(t.title)}</h3><p>${esc(t.artist)}</p>
       <button class="lrow" data-act="addpl" data-id="${id}">Add to playlist</button>
       <button class="lrow" data-act="playnext" data-id="${id}">Play next</button>
+      ${t.yt?`<div class="lrow" style="color:var(--muted)">YouTube songs can't be downloaded</div>`:`<button class="lrow" data-act="dl" data-id="${id}">Download</button>`}
       ${t.demo||t.yt?"":`<button class="lrow" data-act="rm" data-id="${id}" style="color:#C8372D">Remove from this phone</button>`}`);break}
     case"addpl":sheet(`<h3>Add to playlist</h3>${lists.map(l=>`<button class="lrow" data-act="addto" data-id="${l.id}" data-song="${id}">${esc(l.name)}</button>`).join("")}<button class="lrow" data-act="newpl" data-id="${id}">${ic("plus")} New playlist</button>`);break;
     case"addto":addToList(id,b.dataset.song);break;
@@ -685,6 +702,7 @@ document.addEventListener("click",e=>{
     case"clearhist":recents=[];store.set("recents",recents);toast("History cleared");render();break;
     case"reset":sheet(`<h3>Reset BEATNEST?</h3><p>This removes songs saved in the app, favorites, playlists and settings. Files on your phone are not touched, and your VIP membership stays.</p><div class="btns"><button class="btn ghost" data-act="close">Keep my data</button><button class="btn danger" data-act="resetgo">Reset everything</button></div>`);break;
     case"resetgo":resetAll();break;
+    case"dl":closeSheet();downloadTrack(id);break;
     case"signin":fbSignIn();break;
     case"signout":fbSignOut();break;
     case"ytsearch":ytSearch();break;
